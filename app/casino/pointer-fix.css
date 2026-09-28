@@ -1,0 +1,1 @@
+.casino-team-draw{position:relative}.casino-team-draw:after{content:"▼";position:absolute;z-index:30;top:25px;left:50%;transform:translateX(-50%);color:#fff0b0;font-size:38px;line-height:1;filter:drop-shadow(0 4px 5px #000)}.casino-wheel:before{content:none!important}

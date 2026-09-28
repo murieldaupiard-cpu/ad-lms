@@ -1,0 +1,152 @@
+/* /days is a top-level navigation page — deliberately calmer and single-toned
+   compared to the module grids one level down (each of which owns its own
+   accent colors once you're inside a day). */
+
+.days-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.day-row {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 22px 26px;
+  border: 1px solid #263b51;
+  border-radius: 16px;
+  background: #0d2034;
+  color: #fff;
+  text-decoration: none;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.day-row:hover {
+  transform: translateY(-3px);
+  border-color: #f7b936;
+  box-shadow: 0 14px 32px #00000055;
+}
+
+.day-row.locked {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.day-row-num {
+  flex: none;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #33475e;
+  border-radius: 12px;
+  font: 500 22px Georgia, serif;
+  color: #f7b936;
+}
+
+.day-row.locked .day-row-num {
+  color: #7d8ba0;
+}
+
+.day-row-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.day-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.day-row-top h3 {
+  margin: 0;
+  font: 600 19px Georgia, serif;
+}
+
+.day-row-progress {
+  flex: none;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #f7b93622;
+  color: #f7b936;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.11em;
+  white-space: nowrap;
+}
+
+.day-row-progress.locked {
+  background: #ffffff14;
+  color: #9fb0c1;
+}
+
+.day-row-body p {
+  margin: 6px 0 0;
+  color: #91a4b6;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.day-row-meta {
+  display: inline-block;
+  margin-top: 8px;
+  color: #62778d;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.day-row-arrow {
+  flex: none;
+  color: #f7b936;
+  font-size: 20px;
+}
+
+@media (max-width: 640px) {
+  .day-row {
+    gap: 16px;
+    padding: 18px;
+  }
+  .day-row-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
+
+/* The questionnaire is a closure step, not a sixth teaching day. */
+.day-row.survey-row {
+  margin-top: 12px;
+  border-color: #167b80;
+  background: linear-gradient(115deg, #0a3d4b, #087f83);
+  box-shadow: inset 4px 0 #52d5c7;
+}
+
+.day-row.survey-row:hover {
+  border-color: #69ead9;
+  box-shadow: 0 14px 32px #032d3659, inset 4px 0 #69ead9;
+}
+
+.day-row.survey-row .day-row-num {
+  border-color: #63d8cd80;
+  background: #ffffff12;
+  color: #8ff3e5;
+}
+
+.day-row.survey-row .day-row-progress {
+  background: #8ff3e522;
+  color: #9af5e8;
+}
+
+.day-row.survey-row .day-row-body p,
+.day-row.survey-row .day-row-meta {
+  color: #b7dedd;
+}
+
+.day-row.survey-row .day-row-arrow {
+  color: #8ff3e5;
+}

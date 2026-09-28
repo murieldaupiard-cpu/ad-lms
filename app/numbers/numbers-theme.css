@@ -1,0 +1,11 @@
+.numbers-page{background:radial-gradient(circle at 65% 8%,#214f9b 0,#0a2248 40%,#030b19 100%)}
+.lesson-pill{border-color:#4e91ff;background:#102d63;color:#b9d5ff}
+.number-panel{border-color:#315ea5;background:linear-gradient(145deg,#102d5ae8,#07162ef5)}
+.number-group{border-color:#5598ff;color:#a9cbff}
+.number-main>strong{background:linear-gradient(180deg,#fff,#83b4ff);-webkit-background-clip:text;color:transparent;text-shadow:0 20px 45px #347ff544}
+.number-words{color:#77b3ff}
+.number-audio{border-color:#559cff;background:linear-gradient(#3f8cff,#1b55b4);box-shadow:0 9px 0 #123b80,0 16px 30px #0006}
+.number-card.active,.number-card.selected{border-color:#67a6ff;background:#173d7a}
+.number-footer button.primary,.next,.speak-actions button.primary{background:linear-gradient(#438fff,#1c56b8)}
+.number-card-status,.activity-panel>span,.group-panel>span,.number-how b{color:#8ebcff}
+.score-ring{--number-accent:#438fff}

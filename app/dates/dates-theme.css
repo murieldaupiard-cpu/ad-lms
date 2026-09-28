@@ -1,0 +1,6 @@
+.dates-page{--mint:#72df77;--teal:#249c55;background:radial-gradient(circle at 75% 0,#276f48 0,#123b31 38%,#061912 100%)}
+.dates-card{border-color:#3b8157;background:linear-gradient(145deg,#174a35ef,#09251bf8)}
+.dates-top span,.date-focus small,.overview button em,.challenge summary{color:#9aeba0}
+.date-primary,.date-secondary{background:linear-gradient(135deg,#82e889,#249c55);color:#092c18}
+.date-progress em{background:linear-gradient(90deg,#249c55,#9aee9d)}
+.listen-orb{border-color:#8bea91;background:radial-gradient(circle,#72dc78,#218d4e)}

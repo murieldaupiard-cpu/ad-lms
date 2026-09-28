@@ -1,0 +1,10 @@
+.symbols-page{background:radial-gradient(circle at 72% 5%,#7a244a 0,#281329 38%,#0d0713 100%)}
+.symbols-pill{border-color:#c84b79;background:#3b142d;color:#ffd3e2}
+.symbol-panel,.welcome-card{border-color:#71324f;background:linear-gradient(145deg,#37182ded,#140a18f5)}
+.symbols-footer button,.symbols-top>button{border-color:#71324f;background:#321328}
+.symbols-footer button.primary,.quiz-nav button:last-child,.results-symbols footer button.primary,.symbol-complete button:last-child,.type-card button.check{background:linear-gradient(#f05285,#a71f55)}
+.symbol-focus button,.quiz-audio,.enter-symbols button{border-color:#ef6c99;background:linear-gradient(#ed5b8d,#a71f55)}
+.symbol-grid button.active,.welcome-meta b,.symbol-steps>button>b{border-color:#f36f9d;background:#681d43}
+.symbol-focus>span,.quiz-panel header span,.type-panel header span,.results-symbols header span,.symbol-complete>span,.welcome-card>span,.weak-symbols small{color:#ffb7cf}
+.welcome-card header h1,.enter-symbols h1{background:linear-gradient(90deg,#fff,#ffb8d0,#ff729f);-webkit-background-clip:text;color:transparent}
+.overview-title em{background:linear-gradient(90deg,#d92f6c,#ff87ab)}

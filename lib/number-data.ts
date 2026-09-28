@@ -1,0 +1,8 @@
+export type NumberLesson = { value: number; display: string; words: string; group: string };
+const ones=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+const tens=["","","twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
+function under1000(n:number):string{if(n<20)return ones[n];if(n<100)return tens[Math.floor(n/10)]+(n%10?`-${ones[n%10]}`:"");return `${ones[Math.floor(n/100)]} hundred${n%100?` and ${under1000(n%100)}`:""}`}
+export function numberWords(value:number):string{if(value<1000)return under1000(value);const scales:[number,string][]=[[1_000_000_000,"billion"],[1_000_000,"million"],[1_000,"thousand"]];let left=value;const parts:string[]=[];for(const[amount,label]of scales){if(left>=amount){const count=Math.floor(left/amount);parts.push(`${under1000(count)} ${label}`);left%=amount}}if(left)parts.push(under1000(left));return parts.join(", ")}
+export const learningValues=[...Array.from({length:21},(_,i)=>i),30,40,50,60,70,80,90,100,200,300,400,500,600,700,800,900,1000,10000,100000,1000000,10000000,100000000,1000000000];
+export const numberLessons:NumberLesson[]=learningValues.map((value,index)=>({value,display:new Intl.NumberFormat("en-GB").format(value),words:numberWords(value),group:index<=20?"0–20":index<=28?"Tens":index<=37?"Hundreds":"Large numbers"}));
+export const speakingValues=[5,13,21,30,415725,87,55,73,752463,167,3586,20000,276124,100000,356987,99,834372,12,80,56873,568591,5000000000,8,15,2534235,6867989434,77,655865,8226128,1976808,853,88];

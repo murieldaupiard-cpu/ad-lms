@@ -1,0 +1,238 @@
+/* Day 3 · Module 03 — exercices de consolidation et briefing de l'épreuve.
+   S'appuie sur method.css (vm-*) pour la coque, les cartes et les boutons. */
+
+/* --- Étape 1 : remettre la méthode dans l'ordre --- */
+.rc-order {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.rc-order-card {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #17364a;
+  background: #091f2e;
+  color: #fff;
+  cursor: pointer;
+  transition: transform .16s ease, border-color .16s ease, opacity .16s ease;
+}
+.rc-order-card:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--accent); }
+.rc-order-card b {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #0d2c3f;
+  color: var(--accent);
+  font-size: 15px;
+}
+.rc-order-card.picked { opacity: .5; cursor: default; border-color: var(--accent); }
+.rc-order-card.picked b { background: var(--accent); color: #06251f; }
+.rc-order-card h3 { margin: 0 0 4px; font-size: 15px; }
+.rc-order-card p { margin: 0; font-size: 13px; line-height: 1.5; color: #9bb1bd; }
+
+/* --- Étape 2 : traduire ou recopier --- */
+.rc-sort { display: grid; gap: 10px; }
+.rc-sort-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #17364a;
+  background: #091f2e;
+}
+.rc-sort-row > span { font-size: 14px; font-weight: 600; }
+.rc-sort-row.good { border-color: #2e9e6b; }
+.rc-sort-row.bad { border-color: #d8544f; }
+.rc-sort-actions { display: flex; gap: 8px; flex: none; }
+.rc-sort-actions button {
+  border: 1px solid #17364a;
+  border-radius: 10px;
+  background: #0d2c3f;
+  color: #9bb1bd;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  padding: 9px 12px;
+  cursor: pointer;
+  transition: transform .14s ease, border-color .14s ease;
+}
+.rc-sort-actions button:hover { transform: translateY(-2px); border-color: var(--accent); }
+.rc-sort-actions button.chosen { background: var(--accent); color: #06251f; border-color: var(--accent); }
+.rc-why {
+  grid-column: 1 / -1;
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #9bb1bd;
+}
+
+/* --- Étape 3 : les champs de la fiche --- */
+.rc-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.rc-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  padding: 13px 14px;
+  border-radius: 12px;
+  border: 1px solid #17364a;
+  background: #091f2e;
+  color: #fff;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: transform .14s ease, border-color .14s ease;
+}
+.rc-field:hover { transform: translateY(-2px); border-color: var(--accent); }
+.rc-field i {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  border-radius: 5px;
+  border: 2px solid #2b5b77;
+}
+.rc-field.on i { background: var(--accent); border-color: var(--accent); }
+.rc-field.good { border-color: #2e9e6b; }
+.rc-field.bad { border-color: #d8544f; }
+.rc-field.missed { border-color: #e0a13c; }
+
+.rc-verdict-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 16px;
+}
+.rc-verdict-bar span { font-size: 12px; color: #9bb1bd; font-weight: 700; letter-spacing: .05em; }
+
+/* --- Retours --- */
+.rc-verdict {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 15px 18px;
+  border-radius: 14px;
+  border: 1px solid #17364a;
+  background: #071a27;
+}
+.rc-verdict.good { border-color: #2e9e6b; }
+.rc-verdict.bad { border-color: #e0a13c; }
+.rc-verdict p { margin: 0; font-size: 13.5px; line-height: 1.6; color: #cfe0e9; }
+.rc-verdict b { color: #fff; }
+.rc-verdict button {
+  flex: none;
+  border: 1px solid #2b5b77;
+  border-radius: 10px;
+  background: #0d2c3f;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+.rc-verdict button:hover { border-color: var(--accent); }
+
+/* --- Étape 4 : le déroulé des 20 minutes --- */
+.rc-why-20 {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+  margin-top: 16px;
+  padding: 17px 19px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 42%, #17364a);
+  background: #071a27;
+}
+.rc-why-20 > b {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: #0d2c3f;
+  color: var(--accent);
+  font-size: 15px;
+}
+.rc-why-20 h3 { margin: 0 0 5px; font-size: 15px; }
+.rc-why-20 p { margin: 0; font-size: 13.5px; line-height: 1.6; color: #9bb1bd; }
+@media (max-width: 560px) { .rc-why-20 { flex-direction: column; } }
+
+.rc-timeline { display: grid; gap: 10px; }
+.rc-timeline article {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid #17364a;
+  background: #091f2e;
+}
+.rc-timeline b {
+  flex: none;
+  min-width: 62px;
+  padding: 7px 0;
+  text-align: center;
+  border-radius: 9px;
+  background: #0d2c3f;
+  color: var(--accent);
+  font-size: 13px;
+}
+.rc-timeline h3 { margin: 0 0 4px; font-size: 15px; }
+.rc-timeline p { margin: 0; font-size: 13.5px; line-height: 1.55; color: #9bb1bd; }
+.rc-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: #06251f;
+}
+.rc-total span { font-size: 11px; font-weight: 800; letter-spacing: .1em; }
+.rc-total strong { font-size: 18px; }
+
+.rc-rules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+.rc-rules article {
+  display: flex;
+  gap: 13px;
+  align-items: flex-start;
+  padding: 15px;
+  border-radius: 14px;
+  border: 1px solid #17364a;
+  background: #071a27;
+}
+.rc-rules b { font-size: 20px; line-height: 1; }
+.rc-rules h3 { margin: 0 0 4px; font-size: 14px; }
+.rc-rules p { margin: 0; font-size: 13px; line-height: 1.55; color: #9bb1bd; }
+
+@media (max-width: 900px) {
+  .rc-order, .rc-rules { grid-template-columns: 1fr; }
+  .rc-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rc-sort-row { grid-template-columns: 1fr; }
+  .rc-sort-actions { justify-content: flex-start; }
+  .rc-verdict { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 560px) {
+  .rc-fields { grid-template-columns: 1fr; }
+  .rc-timeline article { flex-direction: column; gap: 10px; }
+}

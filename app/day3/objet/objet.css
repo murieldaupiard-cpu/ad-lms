@@ -1,0 +1,152 @@
+/* Day 3 · Module 03 — l'objet de l'email. S'appuie sur method.css (vm-*). */
+
+.ob-cat { color: #6fd3a8; }
+.ob-comp { color: #f0a23a; }
+.ob-dem { color: #8fb8ff; }
+
+/* --- Étape 1 : anatomie --- */
+.ob-anatomy { display: grid; gap: 14px; }
+.ob-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 9px;
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid #17364a;
+  background: #071a27;
+  font-size: 17px;
+  font-weight: 700;
+}
+.ob-line > b { color: #9bb1bd; font-weight: 800; }
+.ob-line > i { color: #57788a; font-style: normal; }
+.ob-legend { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.ob-legend article {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 15px;
+  border-radius: 14px;
+  border: 1px solid #17364a;
+  background: #091f2e;
+}
+.ob-legend b {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: #0d2c3f;
+  font-size: 13px;
+}
+.ob-legend h3 { margin: 0 0 4px; font-size: 14px; }
+.ob-legend p { margin: 0; font-size: 13px; line-height: 1.55; color: #9bb1bd; }
+
+.ob-compare { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+.ob-compare article { padding: 15px; border-radius: 14px; border: 1px solid #17364a; background: #071a27; }
+.ob-compare article.bad { border-color: #d8544f; }
+.ob-compare article.good { border-color: #2e9e6b; }
+.ob-compare span { font-size: 10px; font-weight: 800; letter-spacing: .1em; color: #9bb1bd; }
+.ob-compare b { display: block; margin: 8px 0 7px; font-size: 14px; line-height: 1.45; }
+.ob-compare p { margin: 0; font-size: 12.5px; line-height: 1.55; color: #9bb1bd; }
+
+/* --- Étape 2 : catégories --- */
+.ob-sub { margin: 22px 0 10px; font-size: 12px; font-weight: 800; letter-spacing: .1em; color: #9bb1bd; }
+.ob-sub:first-of-type { margin-top: 4px; }
+.ob-cats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.ob-cats article { padding: 14px 15px; border-radius: 13px; border: 1px solid #17364a; background: #091f2e; }
+.ob-cats b { display: block; margin-bottom: 5px; font-size: 14px; color: var(--accent); }
+.ob-cats p { margin: 0; font-size: 12.5px; line-height: 1.55; color: #9bb1bd; }
+.ob-note {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 42%, #17364a);
+  background: #071a27;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #9bb1bd;
+}
+.ob-note b { color: #fff; }
+
+/* --- Étape 3 : le jeu --- */
+.ob-status { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.ob-status i { flex: 1; height: 6px; border-radius: 999px; background: #0d2c3f; overflow: hidden; }
+.ob-status em { display: block; height: 100%; background: var(--accent); transition: width .3s ease; }
+.ob-status span { font-size: 11px; font-weight: 800; letter-spacing: .07em; color: #9bb1bd; }
+
+.ob-brief {
+  margin: 0 0 18px;
+  padding: 17px 19px;
+  border-radius: 14px;
+  border: 1px solid #17364a;
+  background: #071a27;
+  font-size: 14.5px;
+  line-height: 1.65;
+}
+
+.ob-builder { display: grid; gap: 13px; }
+.ob-row small { display: block; margin-bottom: 7px; font-size: 10.5px; font-weight: 800; letter-spacing: .1em; color: #9bb1bd; }
+.ob-row > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.ob-chip {
+  border: 1px solid #17364a;
+  border-radius: 11px;
+  background: #091f2e;
+  color: #fff;
+  font-size: 13px;
+  padding: 11px 14px;
+  cursor: pointer;
+  transition: transform .14s ease, border-color .14s ease;
+}
+.ob-chip:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--accent); }
+.ob-chip.picked { border-color: var(--accent); background: #0d2c3f; }
+.ob-chip.correct { border-color: #2e9e6b; background: #0c2a22; }
+.ob-chip.wrong { border-color: #d8544f; background: #2a1112; }
+.ob-chip:disabled { cursor: default; }
+
+.ob-preview {
+  margin-top: 18px;
+  padding: 16px 19px;
+  border-radius: 14px;
+  border: 1px dashed #2b5b77;
+  background: #071a27;
+}
+.ob-preview small { display: block; margin-bottom: 6px; font-size: 10.5px; font-weight: 800; letter-spacing: .1em; color: #9bb1bd; }
+.ob-preview b { font-size: 15.5px; line-height: 1.5; }
+.ob-preview.good { border-style: solid; border-color: #2e9e6b; }
+.ob-preview.bad { border-style: solid; border-color: #d8544f; }
+
+.ob-feedback {
+  margin-top: 14px;
+  padding: 15px 18px;
+  border-radius: 14px;
+  border: 1px solid #17364a;
+  background: #071a27;
+}
+.ob-feedback.good { border-color: #2e9e6b; }
+.ob-feedback.bad { border-color: #e0a13c; }
+.ob-feedback p { margin: 0; font-size: 13.5px; line-height: 1.6; color: #cfe0e9; }
+.ob-feedback b { color: #fff; }
+.ob-answer { margin-top: 9px !important; color: #9bb1bd !important; }
+.ob-answer i { color: var(--accent); font-style: normal; font-weight: 700; }
+
+.ob-actions { display: flex; gap: 10px; margin-top: 18px; }
+.ob-actions button {
+  border: 1px solid #2b5b77;
+  border-radius: 11px;
+  background: #0d2c3f;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  padding: 13px 18px;
+  cursor: pointer;
+}
+.ob-actions button:disabled { opacity: .45; cursor: default; }
+.ob-actions .vm-primary { border: none; }
+
+@media (max-width: 900px) {
+  .ob-legend, .ob-compare, .ob-cats { grid-template-columns: 1fr; }
+  .ob-line { font-size: 15px; }
+}
