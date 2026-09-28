@@ -3,7 +3,7 @@
 // 4/6 et 5/6 Réseau international – distributeurs exclusifs · Organigramme.
 
 export const documents = [
-  {n: "01", title: "Fiche d’identité", detail: "Informations générales, histoire, chiffres clés, valeurs", file: "/documents/primevere-infographie.pdf"},
+  {n: "01", title: "Fiche d’identité", detail: "Informations générales, histoire, chiffres clés, activités", file: "/documents/primevere-infographie.pdf"},
   {n: "02", title: "Engagements, labels & responsabilité", detail: "Labels, engagements concrets, objectifs 2030", file: "/documents/primevere-engagements.pdf"},
   {n: "03", title: "Catalogue produits", detail: "5 gammes, références, contenances et prix HT", file: "/documents/primevere-catalogue.pdf"},
   {n: "04", title: "Distributeurs exclusifs", detail: "15 partenaires : entreprises, contacts, emails, téléphones", file: "/documents/primevere-distributeurs.pdf"},
@@ -14,8 +14,8 @@ export const identity = {
   general: [
     ["Raison sociale", "Primevère SAS (entreprise fictive)"],
     ["Forme juridique", "SAS"],
-    ["Siège social", "12 rue des Alouettes, 54000 Nancy, France"],
-    ["Téléphone (standard)", "+33 (0)3 83 25 40 00"],
+    ["Siège social", "123 Avenue des Plantes, 75008 Paris, France"],
+    ["Téléphone (standard)", "+33 1 47 32 10 00"],
     ["Email général", "contact@primevere.fr"],
     ["Site internet", "www.primevere.fr"],
     ["Date de création", "1958"],
@@ -38,31 +38,19 @@ export const identity = {
   ],
   figures: [
     ["150", "collaborateurs"],
-    ["25", "produits"],
-    ["3 000", "points de vente"],
+    ["30", "produits"],
+    ["5", "gammes"],
     ["32 M€", "chiffre d’affaires"],
     ["13 %", "à l’export"],
-    ["15", "pays partenaires exclusifs"],
+    ["15", "pays partenaires"],
   ],
-  mission: "Révéler la beauté naturelle de chacun grâce à des soins botaniques sûrs, efficaces et respectueux de l’environnement.",
-  values: [
-    ["Naturalité", "Des ingrédients d’origine naturelle jusqu’à 99 %."],
-    ["Qualité", "Des soins sûrs, efficaces et testés."],
-    ["Innovation", "Des formules qui allient nature, science et sensorialité."],
-    ["Responsabilité", "Un impact environnemental réduit à chaque étape."],
-    ["Bien-être", "Des produits qui prennent soin de la peau et des personnes."],
-  ],
+  mission: "Révéler la beauté naturelle de chacun grâce à des soins botaniques efficaces et respectueux de l’environnement.",
   activity: [
     ["Conception & recherche", "Des formules innovantes inspirées par la nature."],
     ["Fabrication", "Des sites de production modernes et responsables."],
     ["Distribution", "Un réseau de partenaires exclusifs dans 15 pays."],
-    ["Commercialisation", "Des soins accessibles en pharmacies, instituts et magasins spécialisés."],
-  ],
-  local: [
-    "Siège social et laboratoire à Nancy, France",
-    "Emploi local et partenariats avec des producteurs régionaux",
-    "Soutien à la biodiversité et aux filières botaniques durables",
-    "Actions solidaires et mécénat en faveur de l’environnement",
+    ["Commercialisation", "Des soins adaptés à tous les types de peaux et à tous les besoins."],
+    ["Innovation durable", "Des engagements concrets pour une beauté plus responsable."],
   ],
 };
 

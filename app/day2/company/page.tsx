@@ -74,12 +74,12 @@ export default function CompanyModule() {
 
       <div className="pv-panel">
         {active === "identity" && <section>
-          <div className="pv-hero"><Image src="/documents/ranges/siege.webp" alt="Le siège de Primevère" width={924} height={351}/><div><Heading n={0} title="Primevère en un regard">La beauté naturelle depuis 1958. Des soins botaniques, efficaces et responsables, pour révéler la beauté de chacun.</Heading></div></div>
-          <Sub items={[["general", "Informations générales"], ["history", "Notre histoire"], ["figures", "Chiffres clés & valeurs"], ["activity", "Activité & engagement local"]]} value={idSub} onChange={setIdSub}/>
+          <div className="pv-hero"><Image src="/documents/ranges/siege.webp" alt="Le siège de Primevère" width={889} height={409}/><div><Heading n={0} title="Primevère en un regard">La beauté naturelle depuis 1958. Des soins botaniques, efficaces et responsables, pour révéler la beauté de chacun.</Heading></div></div>
+          <Sub items={[["general", "Informations générales"], ["history", "Notre histoire"], ["figures", "Chiffres clés & mission"], ["activity", "Nos activités"]]} value={idSub} onChange={setIdSub}/>
           {idSub === "general" && <dl className="pv-idcard">{identity.general.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>}
           {idSub === "history" && <ol className="pv-timeline">{identity.history.map(([y, t]) => <li key={y}><strong>{y}</strong><p>{t}</p></li>)}</ol>}
-          {idSub === "figures" && <><h3 className="pv-h3">Nos chiffres clés (2024)</h3><div className="pv-facts">{identity.figures.map(([v, l]) => <article key={l}><strong>{v}</strong><span>{l}</span></article>)}</div><blockquote className="pv-quote"><span>NOTRE MISSION</span>« {identity.mission} »</blockquote><h3 className="pv-h3">Nos valeurs</h3><div className="pv-cards five">{identity.values.map(([t, d]) => <article key={t}><h4>{t}</h4><p>{d}</p></article>)}</div></>}
-          {idSub === "activity" && <><h3 className="pv-h3">Notre activité</h3><div className="pv-cards four steps">{identity.activity.map(([t, d], i) => <article key={t}><small>{n2(i)}</small><h4>{t}</h4><p>{d}</p></article>)}</div><h3 className="pv-h3">Notre engagement local</h3><ul className="pv-list">{identity.local.map(x => <li key={x}>{x}</li>)}</ul></>}
+          {idSub === "figures" && <><h3 className="pv-h3">Nos chiffres clés (2024)</h3><div className="pv-facts">{identity.figures.map(([v, l]) => <article key={l}><strong>{v}</strong><span>{l}</span></article>)}</div><blockquote className="pv-quote"><span>NOTRE MISSION</span>« {identity.mission} »</blockquote></>}
+          {idSub === "activity" && <div className="pv-cards five steps">{identity.activity.map(([t, d], i) => <article key={t}><small>{n2(i)}</small><h4>{t}</h4><p>{d}</p></article>)}</div>}
           <Source doc="01"/>
         </section>}
 
