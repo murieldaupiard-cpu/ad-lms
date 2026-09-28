@@ -33,11 +33,11 @@ const days = [
   {
     number: "04",
     title: "Exam Prep · Part 2",
-    description: "Answering the phone in English: the second stage of your exam preparation.",
-    href: "/day3",
-    activities: "To be built",
+    description: "Ten live phone calls with Primevère: the AI plays the caller, you take the message and route it to the right person.",
+    href: "/exam-prep-2",
+    activities: "10 appels · 1 disponible",
     progress: 0,
-    live: false,
+    live: true,
   },
   {
     number: "05",
@@ -102,9 +102,9 @@ export default function Days() {
             <p>One goal: walk into your Assistant de Direction exam ready.</p>
           </div>
           <div className="modules-progress">
-            <span>5 OF 7 DAYS LIVE</span>
+            <span>6 OF 7 DAYS LIVE</span>
             <i>
-              <em style={{ width: "71%" }} />
+              <em style={{ width: "86%" }} />
             </i>
           </div>
         </div>
