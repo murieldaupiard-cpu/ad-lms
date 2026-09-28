@@ -16,3 +16,20 @@ test("MES 1 : la fiche attendue est validée et les erreurs sont refusées", () 
   assert.equal(s.recipient, "Joël SALU");
   assert.equal(new Set(s.criteria.map(c => c.id)).size, s.criteria.length);
 });
+
+test("Grille AD : fiche validée à 1 erreur près, réussite à 6/10 avec les critères 1 et 5", async () => {
+  const {ficheValidated, globalResult, FICHE} = await import("../lib/call-scenarios.ts");
+  const all = Object.fromEntries(FICHE.map(f => [f.key, true]));
+  assert.equal(ficheValidated(all), true);
+  assert.equal(ficheValidated({...all, city: false}), true);
+  assert.equal(ficheValidated({...all, city: false, job: false}), false);
+  assert.equal(ficheValidated({...all, lastName: false}), false);
+  assert.equal(ficheValidated({...all, phone: false, email: false}), false);
+  assert.equal(ficheValidated({...all, phone: false}), true);
+  const ten = ["accueil","identification","orientation","motif","coordonnees","demande","cloture","english","fiche","destinataire"];
+  const v = n => Object.fromEntries(ten.map((id, i) => [id, i < n]));
+  assert.equal(globalResult(v(6)).acquis, true);
+  assert.equal(globalResult(v(5)).acquis, false);
+  assert.equal(globalResult({...v(10), coordonnees: false}).acquis, false);
+  assert.equal(globalResult({...v(10), accueil: false}).acquis, false);
+});

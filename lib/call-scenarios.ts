@@ -42,6 +42,7 @@ const RULES = `
 HOW TO PLAY THE CALL
 - You are on the phone. Speak natural spoken English, in short turns (one or two sentences). Never use lists or formatting.
 - The other person is a receptionist at Primevère (a French cosmetics company, head office in Paris) who is practising English. They speak first when they pick up the phone.
+- If the receptionist summarises your message ("So, to recap…"), listen and confirm or correct each detail.
 - Only give information when you are asked for it or when it is natural in the conversation. Do not give all the details at once.
 - If asked to spell a name, spell it slowly, letter by letter (for example: "D - E - S - C - H - A - M - P - S"). Only spell when asked.
 - Give phone numbers slowly, in small groups of digits.
@@ -99,13 +100,13 @@ ${RULES}`,
     recipient: "Joël SALU",
     recipientWhy: "Joël SALU, Responsable de l’administration des ventes : c’est lui que M. Deschamps demande, et l’administration des ventes suit les commandes et les réclamations des clients (livraisons, retards, colis abîmés).",
     criteria: [
-      {id: "accueil", name: "Accueil", goal: "At the start of the call, the user (the receptionist) greeted the caller professionally, named the company (Primevère) and offered help (for example: 'Good afternoon, Primevère, how may I help you?'). Rédige la justification en français, en une ou deux phrases."},
+      {id: "accueil", name: "Accueil", goal: "At the start of the call, the user (the receptionist) greeted the caller professionally, gave their own name, named the company (Primevère) and offered help (for example: 'Good afternoon, Primevère, Anna speaking. How may I help you?'). Rédige la justification en français, en une ou deux phrases."},
       {id: "identification", name: "Identification de l’appelant", goal: "The user asked for and obtained the caller's name and company, and asked the caller to spell his name (or checked its spelling). Rédige la justification en français, en une ou deux phrases."},
-      {id: "absence", name: "Absence et prise de message", goal: "The user politely explained that Mr Salu was not available and offered to take a message (or to have him call back). Rédige la justification en français, en une ou deux phrases."},
-      {id: "motif", name: "Compréhension du motif", goal: "The user understood the reason for the call — a complaint about a delivery that arrived late (expected 5 January, received 15 January) with three damaged boxes — and asked questions or rephrased to check these details. Rédige la justification en français, en une ou deux phrases."},
-      {id: "coordonnees", name: "Coordonnées vérifiées", goal: "The user asked for the caller's phone number and/or email address and read them back (repeated them) to check they were correct. Rédige la justification en français, en une ou deux phrases."},
-      {id: "urgence", name: "Urgence et engagement", goal: "The user acknowledged that the matter is urgent and reassured the caller that the message would be passed on and that Mr Salu would call him back as soon as possible. Rédige la justification en français, en une ou deux phrases."},
-      {id: "cloture", name: "Clôture", goal: "The user ended the call politely (for example thanking the caller and saying goodbye). Rédige la justification en français, en une ou deux phrases."},
+      {id: "orientation", name: "Orientation de l’appel / prise de message", goal: "The user dealt correctly with the request to speak to Mr Salu: since he was not available, the user explained it politely and offered to take a message. Rédige la justification en français, en une ou deux phrases."},
+      {id: "motif", name: "Compréhension du motif de l’appel", goal: "The user understood the reason for the call — a complaint about a delivery that arrived late (expected 5 January, received 15 January) with three damaged boxes — by asking questions and/or rephrasing to check these details. Rédige la justification en français, en une ou deux phrases."},
+      {id: "coordonnees", name: "Coordonnées vérifiées et informations reformulées", goal: "The user asked for the caller's phone number and/or email address, read them back to check them, AND summarised (rephrased) the main information of the call to make sure it was understood (for example 'So, to recap…'). Both parts are required. Rédige la justification en français, en une ou deux phrases."},
+      {id: "demande", name: "Prise en compte de la demande et engagement", goal: "The user acknowledged the caller's request (and its urgency) and committed to what would happen next: the message would be passed on and Mr Salu would call back as soon as possible. Rédige la justification en français, en une ou deux phrases."},
+      {id: "cloture", name: "Clôture", goal: "The user ended the call politely: checked whether there was anything else, thanked the caller and said goodbye. Rédige la justification en français, en une ou deux phrases."},
       ENGLISH,
     ],
     model: [
@@ -132,4 +133,18 @@ export function scoreFiche(s: CallScenario, key: FicheKey, value: string): boole
   if (key === "email") return value.toLowerCase().replace(/\s/g, "").replace(/[.,;]+$/, "") === s.answers.email.toLowerCase();
   const groups = s.groups[key];
   return !!groups && groups.some(g => g.every(t => v.includes(normalise(t))));
+}
+
+// Grille d'évaluation MES AD (Muriel, septembre 2026) : 8 critères de l'appel évalués par l'IA,
+// 9 = fiche de renseignements, 10 = destinataire. ACQUIS si au moins 6/10, dont les critères 1 et 5.
+export const FICHE_CRITERION = {id: "fiche", name: "Fiche de renseignements complète et exacte"};
+export const RECIPIENT_CRITERION = {id: "destinataire", name: "Message transmis au bon destinataire"};
+export const REQUIRED = ["accueil", "coordonnees"];
+export function ficheValidated(ok: Record<FicheKey, boolean>): boolean {
+  const wrong = FICHE.filter(f => !ok[f.key]).length;
+  return wrong <= 1 && ok.lastName && (ok.phone || ok.email);
+}
+export function globalResult(validated: Record<string, boolean>): {count: number; acquis: boolean} {
+  const count = Object.values(validated).filter(Boolean).length;
+  return {count, acquis: count >= 6 && REQUIRED.every(id => validated[id])};
 }

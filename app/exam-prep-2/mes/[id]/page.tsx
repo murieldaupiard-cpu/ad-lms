@@ -3,7 +3,7 @@ import Link from "next/link";
 import {useParams} from "next/navigation";
 import {useEffect, useMemo, useRef, useState} from "react";
 import "./call.css";
-import {FICHE, RECIPIENTS, findScenario, scoreFiche, type FicheKey} from "@/lib/call-scenarios";
+import {FICHE, FICHE_CRITERION, RECIPIENTS, RECIPIENT_CRITERION, REQUIRED, ficheValidated, findScenario, globalResult, scoreFiche, type FicheKey} from "@/lib/call-scenarios";
 import {LiveCall, type Line} from "@/lib/live-call";
 
 type Phase = "brief" | "ringing" | "connecting" | "live" | "ended" | "corrected";
@@ -87,7 +87,11 @@ export default function CallPage() {
   if (!s) return <main className="call-page"><section className="call-shell"><h1>MES introuvable</h1><Link href="/exam-prep-2">← Retour</Link></section></main>;
   const ficheScore = results.filter(r => r.ok).length;
   const recipientOk = recipient === s.recipient;
-  const critOk = criteria?.filter(c => c.result === "success").length ?? 0;
+  const ficheOk = ficheValidated(Object.fromEntries(results.map(r => [r.key, r.ok])) as Record<FicheKey, boolean>);
+  const grid = [...(criteria || s.criteria.map(c => ({id: c.id, name: c.name, result: "pending", rationale: ""}))),
+    {id: FICHE_CRITERION.id, name: FICHE_CRITERION.name, result: ficheOk ? "success" : "failure", rationale: `${ficheScore} champ${ficheScore > 1 ? "s" : ""} juste${ficheScore > 1 ? "s" : ""} sur ${FICHE.length}. Validé si au plus 1 champ est faux ou manquant, avec le nom de l’appelant et au moins un moyen de contact justes.`},
+    {id: RECIPIENT_CRITERION.id, name: RECIPIENT_CRITERION.name, result: recipientOk ? "success" : "failure", rationale: recipientOk ? s.recipientWhy : `Vous avez choisi ${recipient || "aucun destinataire"}. ${s.recipientWhy}`}];
+  const verdict = globalResult(Object.fromEntries(grid.map(c => [c.id, c.result === "success"])));
   const inCall = phase === "connecting" || phase === "live";
   const canEdit = phase !== "brief" && phase !== "corrected";
 
@@ -118,11 +122,11 @@ export default function CallPage() {
     </section>}
 
     {phase === "corrected" && <section className="call-correction">
-      <div className="scores"><article><strong>{ficheScore} / {FICHE.length}</strong><span>champs de la fiche</span></article><article className={recipientOk ? "ok" : "ko"}><strong>{recipientOk ? "✓" : "✗"}</strong><span>destinataire</span></article><article><strong>{analysis === "done" ? `${critOk} / ${criteria?.length}` : "…"}</strong><span>critères de l’appel</span></article></div>
-      <h2>Votre appel, critère par critère</h2>
+      <div className={`verdict ${analysis !== "done" ? "" : verdict.acquis ? "ok" : "ko"}`}><div><span>RÉSULTAT GLOBAL</span><strong>{analysis === "waiting" ? "Analyse en cours…" : analysis === "failed" ? "Résultat partiel" : verdict.acquis ? "ACQUIS" : "NON ACQUIS"}</strong></div><div><b>{analysis === "done" ? verdict.count : "…"} / 10</b><small>critères validés · ACQUIS si au moins 6 sur 10, dont les critères 1 (Accueil) et 5 (Coordonnées vérifiées et informations reformulées)</small></div></div>
+      <h2>Grille d’évaluation, critère par critère</h2>
       {analysis === "waiting" && <p className="waiting" role="status">Analyse de l’appel en cours… (quelques secondes)</p>}
-      {analysis === "failed" && <p className="waiting">L’analyse de l’appel n’est pas disponible pour le moment. Relisez votre conversation et les phrases modèles ci-dessous.</p>}
-      {criteria && <ul className="criteria">{criteria.map(c => <li key={c.id} className={c.result}><b>{c.result === "success" ? "✓" : c.result === "failure" ? "✗" : "?"} {c.name}</b><p>{c.rationale || "Pas assez d’éléments dans l’appel pour évaluer ce critère."}</p></li>)}</ul>}
+      {analysis === "failed" && <p className="waiting">L’analyse de l’appel n’est pas disponible pour le moment : seuls les critères 9 et 10 sont corrigés. Relisez votre conversation et les phrases modèles ci-dessous.</p>}
+      <ol className="criteria">{grid.map((c, i) => <li key={c.id} className={c.result}><b><i>{i + 1}</i>{c.result === "success" ? "✓" : c.result === "failure" ? "✗" : c.result === "pending" ? "…" : "?"} {c.name}{REQUIRED.includes(c.id) && <em>obligatoire</em>}</b><p>{c.result === "pending" ? "En cours d’analyse…" : c.rationale || "Pas assez d’éléments dans l’appel pour évaluer ce critère."}</p></li>)}</ol>
       <h2>Des phrases modèles</h2>
       <ol className="model">{s.model.map(m => <li key={m}>{m}</li>)}</ol>
       <div className="actions"><button type="button" onClick={restart}>↻ REFAIRE L’APPEL</button><Link href="/exam-prep-2">TOUTES LES MES →</Link></div>
