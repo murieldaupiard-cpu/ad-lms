@@ -92,10 +92,10 @@ export default function CallPage() {
   const canEdit = phase !== "brief" && phase !== "corrected";
 
   return <main className="call-page">
-    <header className="call-top"><Link href="/exam-prep-2" className="call-back">← EXAM PREP · PART 2</Link><div><small>EXAM PREP · PART 2 · ACCUEIL TÉLÉPHONIQUE</small><strong>MES {s.n} · {s.company} — {s.kind}</strong></div><span className="call-date">{s.date} · {s.time}</span></header>
+    <header className="call-top"><Link href="/exam-prep-2" className="call-back">← EXAM PREP · PART 2</Link><div><small>EXAM PREP · PART 2 · ACCUEIL TÉLÉPHONIQUE</small><strong>MES {s.n}</strong></div><span className="call-date">{s.date} · {s.time}</span></header>
 
     {phase === "brief" ? <section className="call-brief">
-      <span>MES {s.n} · {s.company.toUpperCase()} · AVANT L’APPEL</span><h1>MES {s.n} · Le téléphone va sonner.</h1><p>{s.briefing}</p>
+      <span>AVANT L’APPEL</span><h1>MES {s.n}</h1><p>{s.briefing}</p>
       <ul><li>Décrochez et accueillez l’appelant <b>en anglais</b>, comme à l’accueil de Primevère.</li><li>Remplissez la <b>fiche de renseignements</b> pendant l’appel (en français).</li><li>Après l’appel, choisissez le <b>destinataire du message</b> dans l’organigramme.</li><li>Utilisez un <b>casque ou des écouteurs</b> : sinon l’appelant s’entend lui-même.</li></ul>
       <button type="button" onClick={() => setPhase("ringing")}>JE SUIS PRÊT(E) →</button>
     </section> : <section className="call-grid">
