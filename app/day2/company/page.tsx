@@ -1,58 +1,157 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import {useEffect, useMemo, useState} from "react";
 import "./company.css";
+import {catalogueClaims, commitments, directions, documents, identity, ingredients, leadership, quiz, ranges, regions, type Person} from "./data";
 
-type Tab = "identity"|"history"|"team"|"network"|"mission";
-const tabs:[Tab,string,string][]=[["identity","01","L’entreprise"],["history","02","Histoire & produits"],["team","03","Équipe"],["network","04","Réseau international"],["mission","05","Mission"]];
-const docs=[["Infographie entreprise","/documents/primevere-infographie.pdf"],["Organigramme","/documents/primevere-organigramme.pdf"],["Catalogue produits","/documents/primevere-catalogue.pdf"],["Distributeurs exclusifs","/documents/primevere-distributeurs.pdf"]];
-const facts=[["1958","Année de création"],["150","Collaborateurs environ"],["25","Produits"],["5","Gammes"],["3 000","Points de vente"],["32 M€","Chiffre d’affaires"],["13 %","Réalisé à l’export"]];
-const timeline=[["1958","Création par Marta et Jean Primevère, chimistes"],["1965","Première collection visage et corps"],["1978","La société devient anonyme"],["1988","Pierre Boss devient PDG"],["1992","Développement du maquillage et des solaires"],["1996","Expansion nationale et européenne"]];
-const ranges=[
- ["Soins visage & corps","Lait hydratant intense 24 h · Crème de jour à l’aubépine · Sérum végétal coup d’éclat · Peeling végétal exfoliant","/documents/ranges/visage-corps.jpg"],
- ["Hygiène / Beauté express","Gel douche hydratant au monoï · Crème réparatrice pour les mains · Lait démaquillant apaisant · Lotion tonique clarifiante","/documents/ranges/hygiene.jpg"],
- ["Parfums & senteurs","Eau de parfum au jasmin · Senteurs marines · Senteurs des Prés · Serviettes rafraîchissantes","/documents/ranges/parfums.jpg"],
- ["Maquillage","Produits pour le teint · le regard · les lèvres · les ongles","/documents/ranges/maquillage.jpg"],
- ["Produits solaires","Crème solaire visage antirides · Écran total visage · Crème autobronzante visage · Lait apaisant après-soleil","/documents/ranges/solaire.jpg"],
-];
-const departments=[
- ["purchases","Direction des achats","Achats, fournisseurs et stocks","Yves Billet · Directeur des achats|Xavier Bello · Acheteur|René Sochan · Acheteur|Hervé Lempereur · Responsable du magasin des matières premières et emballages"],
- ["production","Direction de production","Fabrication, laboratoire et qualité","Pierre Viron · Directeur de production|François Rossi · Responsable du laboratoire|Claude Jourdain · Responsable assurance qualité de la fabrication|Pierre Aune · Responsable du magasin des produits finis"],
- ["sales","Direction commerciale","Ventes et administration des ventes","Daniel Berger · Directeur commercial|Joël Salu · Responsable de l’administration des ventes|Jacques Joux · Chef des ventes|Lucien Lanoan · Chef des ventes"],
- ["services","Services généraux","Locaux, sécurité et livraisons","René Dupré · Directeur des services généraux|Entretien des machines et du matériel|Hygiène et sécurité|Transports et livraisons"],
- ["admin","Direction administrative","Finance, RH et juridique","Christian Catala · Directeur administratif|Daniel Larue · Responsable comptabilité et finances|Gérald Marchand · Directeur des ressources humaines|Service juridique"],
-];
-const regions=[["Europe · 7","Allemagne, Espagne, Irlande, Italie, Royaume-Uni, Suède, Ukraine"],["Amériques · 3","Brésil, Canada, États-Unis"],["Afrique, Moyen-Orient & Asie · 5","Chine, Corée du Sud, Égypte, Émirats arabes unis, Maroc"]];
-const quiz=[
- ["Où se trouve le siège de Primevère ?",["Nancy","Paris","Lyon"],0,"Le réseau est piloté depuis Nancy."],
- ["Qui dirige l’entreprise ?",["Daniel Berger","Pierre Boss","Joël Salu"],1,"Pierre Boss est PDG depuis 1988."],
- ["Qui est Responsable de l’administration des ventes ?",["Joël Salu","Yves Billet","Gérald Marchand"],0,"Joël Salu appartient à la Direction commerciale."],
- ["Combien de partenaires internationaux représentent la marque ?",["12","15","25"],1,"Primevère possède 15 distributeurs exclusifs."],
- ["Quel pays n’appartient pas au réseau européen ?",["Suède","Canada","Ukraine"],1,"Le Canada appartient à la zone Amériques."],
- ["Quel univers comprend l’eau de parfum au jasmin ?",["Solaire","Parfums & senteurs","Beauté express"],1,"Elle figure dans Parfums & senteurs."],
- ["Quelle part du chiffre d’affaires est réalisée à l’export ?",["13 %","32 %","58 %"],0,"13 % du chiffre d’affaires est réalisé à l’export."],
- ["Quel service gère les transports et livraisons ?",["Services généraux","Achats","Administration"],0,"Ils dépendent des Services généraux."]
-] as [string,string[],number,string][];
+const MODULE_LABEL = "AD · DAY 02 · MODULE 02";
+const NEXT = {href: "/day2/vocabulary", label: "VOCABULARY →"};
+const STORE = "primevere-docs-downloaded";
 
-export default function CompanyModule(){
- const [active,setActive]=useState<Tab>("identity"),[open,setOpen]=useState(false),[range,setRange]=useState(0),[qi,setQi]=useState(0),[pick,setPick]=useState<number|null>(null),[score,setScore]=useState(0),[done,setDone]=useState(false); const q=quiz[qi];
- const choose=(i:number)=>{if(pick!==null)return;setPick(i);if(i===q[2])setScore(s=>s+1)};
- const next=()=>{if(qi===quiz.length-1){setDone(true);return}setQi(i=>i+1);setPick(null)};
- const reset=()=>{setQi(0);setPick(null);setScore(0);setDone(false)};
- return <main className="company-module">
-  <header className="company-topbar"><div className="company-brand"><Image src="/documents/primevere-logo.png" alt="Primevère" width={128} height={116} priority/><div><small>CADGA · DAY 02 · MODULE 02</small><strong>DOSSIER ENTREPRISE</strong></div></div><div className="top-actions"><div className="download-wrap"><button className="download-trigger" onClick={()=>setOpen(v=>!v)}>↓ TÉLÉCHARGER LES DOCUMENTS <b>4</b></button>{open&&<div className="download-menu">{docs.map(([title,file],i)=><a href={file} download key={file}><span>0{i+1}</span><b>{title}</b><em>↓ PDF</em></a>)}</div>}</div><Link href="/day2">EXIT</Link></div></header>
-  <section className="company-shell"><div className="company-intro"><div><span>AVANT LE VOCABULAIRE</span><h1>Découvrir Primevère</h1><p>Explore l’entreprise fictive pour comprendre son activité, orienter les demandes et transmettre chaque message au bon interlocuteur.</p></div><div className="intro-badge"><b>15</b><span>PARTENAIRES<br/>INTERNATIONAUX</span></div></div>
-   <nav className="company-tabs">{tabs.map(([id,n,label])=><button key={id} className={active===id?"active":""} onClick={()=>setActive(id)}><b>{n}</b><span>{label}</span></button>)}</nav>
-   <div className="company-panel">
-    {active==="identity"&&<section><Heading n="01" title="Primevère en un regard">Entreprise française de cosmétiques naturels créée à Nancy, spécialisée dans des produits personnalisés et adaptés aux besoins de ses clients.</Heading><div className="fact-grid">{facts.map(([v,l])=><article key={l}><strong>{v}</strong><span>{l}</span></article>)}</div><div className="pill-row"><b>Écoute & service</b><b>Qualité & sécurité</b><b>Recherche & innovation</b><b>Performance & environnement</b></div></section>}
-    {active==="history"&&<section><Heading n="02" title="Une histoire de passion et d’innovation"/><div className="timeline">{timeline.map(([y,t])=><article key={y}><strong>{y}</strong><p>{t}</p></article>)}</div><h3 className="subheading">Découvre les 5 gammes</h3><div className="range-tabs">{ranges.map(([name],i)=><button className={range===i?"active":""} onClick={()=>setRange(i)} key={name}>{name}</button>)}</div><div className="range-reveal with-photo"><img src={ranges[range][2]} alt={ranges[range][0]}/><div><span>GAMME {String(range+1).padStart(2,"0")}</span><h3>{ranges[range][0]}</h3><p>{ranges[range][1]}</p></div></div></section>}
-    {active==="team"&&<section><Heading n="03" title="Les services de Primevère"><b>Pierre Boss</b> · Président-directeur général</Heading><div className="sector-static-grid">{departments.map(([id,title,subtitle,people])=><article key={id}><SectorIcon type={id}/><h3>{title}</h3><small>{subtitle}</small><ul>{people.split("|").map(person=><li key={person}>{person}</li>)}</ul></article>)}</div><div className="callout compact"><b>Le bon message, à la bonne personne.</b><span>Identifier le service et l’interlocuteur concernés garantit une transmission fiable et une réponse rapide au client.</span></div></section>}
-    {active==="network"&&<section><Heading n="04" title="15 distributeurs exclusifs">Primevère choisit des partenaires pour représenter sa marque et adapte son accompagnement à chaque marché.</Heading><div className="region-grid">{regions.map(([t,p])=><article key={t}><h3>{t}</h3><p>{p}</p></article>)}</div><div className="callout compact"><b>Les bons repères, dès le premier contact.</b><span>Lors d’un appel international, identifie le pays, l’entreprise, la fonction de ton interlocuteur et l’objet de son appel afin de transmettre sa demande au bon service.</span></div></section>}
-    {active==="mission"&&<section className="quiz-section">{!done?<><div className="quiz-head"><div><span>05 · MISSION DE REPÉRAGE</span><h2>{q[0]}</h2></div><div><b>{qi+1} / {quiz.length}</b><span>SCORE {score}</span></div></div><div className="choice-grid">{q[1].map((c,i)=><button key={c} onClick={()=>choose(i)} className={pick===null?"":i===q[2]?"correct":i===pick?"wrong":"muted"}>{c}</button>)}</div>{pick!==null&&<div className="feedback"><div><b>{pick===q[2]?"Bien vu !":"À retenir"}</b><p>{q[3]}</p></div><button onClick={next}>{qi===quiz.length-1?"VOIR MON RÉSULTAT":"QUESTION SUIVANTE →"}</button></div>}</>:<div className="result"><span>{score} / {quiz.length}</span><h2>{score>=6?"Tu connais Primevère.":"Reprends les onglets avant de réessayer."}</h2><div><button onClick={reset}>RECOMMENCER</button><Link href="/day2/vocabulary">CADGA VOCABULARY →</Link></div></div>}</section>}
-   </div>
-  </section>
- </main>
+const tabs = [
+  {id: "identity", label: "Fiche d’identité"},
+  {id: "commitments", label: "Engagements & labels"},
+  {id: "catalogue", label: "Catalogue produits"},
+  {id: "europe", label: "Distributeurs · Europe"},
+  {id: "world", label: "Distributeurs · Monde"},
+  {id: "org", label: "Organigramme"},
+  {id: "docs", label: "Documents"},
+  {id: "quiz", label: "Manipuler les documents"},
+] as const;
+type TabId = typeof tabs[number]["id"];
+const n2 = (i: number) => String(i + 1).padStart(2, "0");
+
+type SubItem = readonly [string, string, string?];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function Sub({items, value, onChange}: {items: readonly SubItem[]; value: string; onChange: (v: any) => void}) {
+  return <div className="pv-sub" role="tablist">{items.map(([id, label, count]) => <button type="button" role="tab" aria-selected={value === id} className={value === id ? "active" : ""} key={id} onClick={() => onChange(id)}>{label}{count && <b>{count}</b>}</button>)}</div>;
 }
-function Heading({n,title,children}:{n:string,title:string,children?:React.ReactNode}){return <div className="panel-heading"><span>{n} · DOSSIER PRIMÈVÈRE</span><h2>{title}</h2>{children&&<p>{children}</p>}</div>}
-function SectorIcon({type}:{type:string}){const paths:Record<string,string>={purchases:"M4 7h16M6 7l2 12h8l2-12M9 7a3 3 0 0 1 6 0",production:"M4 20V9l5 3V9l5 3V5h4v15M8 17h2m3 0h2",sales:"M4 19V9m6 10V5m6 14v-7m5 7H2",services:"M14 6l4-4 4 4-4 4m-2-2-7 7m-2-2-4 4 4 4 4-4",admin:"M4 20h16M6 20V9m4 11V9m4 11V9m4 11V9M3 9l9-6 9 6"};return <svg viewBox="0 0 24 24" aria-hidden="true"><path d={paths[type]||paths.admin}/></svg>}
+function Heading({n, title, children}: {n: number; title: string; children?: React.ReactNode}) {
+  return <div className="pv-heading"><span>{n2(n)} · DOSSIER PRIMEVÈRE</span><h2>{title}</h2>{children && <p>{children}</p>}</div>;
+}
+function Source({doc}: {doc: string}) {
+  const d = documents.find(x => x.n === doc)!;
+  return <p className="pv-source">Source : document {d.n} · {d.title}</p>;
+}
+function PersonCard({p}: {p: Person}) {
+  const initials = p[0].split(" ").map(x => x[0]).join("").slice(0, 2);
+  return <article className="pv-person"><i aria-hidden="true">{initials}</i><div><h4>{p[0]}</h4><p>{p[1]}</p><small>☎ {p[2]}</small><small>✉ {p[3]}</small></div></article>;
+}
+
+export default function CompanyModule() {
+  const [active, setActive] = useState<TabId>("identity");
+  const [idSub, setIdSub] = useState<"general" | "history" | "figures" | "activity">("general");
+  const [cmSub, setCmSub] = useState<"labels" | "concrete" | "goals" | "field">("labels");
+  const [range, setRange] = useState(ranges[0].id);
+  const [world, setWorld] = useState("ameriques");
+  const [dir, setDir] = useState("direction");
+  const [downloaded, setDownloaded] = useState<string[]>([]);
+  const [started, setStarted] = useState(false);
+  const [qi, setQi] = useState(0), [pick, setPick] = useState<number | null>(null), [answers, setAnswers] = useState<boolean[]>([]), [done, setDone] = useState(false);
+
+  useEffect(() => { try { const v = JSON.parse(localStorage.getItem(STORE) || "[]"); if (Array.isArray(v)) setDownloaded(v); } catch {} }, []);
+  const markDownloaded = (file: string) => setDownloaded(list => { const next = [...new Set([...list, file])]; try { localStorage.setItem(STORE, JSON.stringify(next)); } catch {} return next; });
+  const allDownloaded = documents.every(d => downloaded.includes(d.file));
+  const tabIndex = tabs.findIndex(t => t.id === active);
+  const go = (id: TabId) => { setActive(id); if (typeof window !== "undefined") window.scrollTo({top: 0, behavior: "smooth"}); };
+
+  const q = quiz[qi];
+  const score = answers.filter(Boolean).length;
+  const choose = (i: number) => { if (pick !== null) return; setPick(i); setAnswers(a => [...a, i === q.answer]); };
+  const next = () => { if (qi === quiz.length - 1) { setDone(true); return; } setQi(i => i + 1); setPick(null); };
+  const reset = () => { setQi(0); setPick(null); setAnswers([]); setDone(false); };
+  const byCat = useMemo(() => { const m = new Map<string, [number, number]>(); quiz.forEach((x, i) => { const r = m.get(x.cat) || [0, 0]; m.set(x.cat, [r[0] + (answers[i] ? 1 : 0), r[1] + 1]); }); return [...m]; }, [answers]);
+
+  const currentRange = ranges.find(r => r.id === range)!;
+  const worldRegion = regions.find(r => r.id === world)!;
+
+  return <main className="pv">
+    <header className="pv-top"><div className="pv-brand"><Image src="/documents/primevere-logo.png" alt="Primevère" width={128} height={116} priority/><div><small>{MODULE_LABEL}</small><strong>DÉCOUVRIR PRIMEVÈRE</strong></div></div><div className="pv-top-actions"><button type="button" className="pv-docs-btn" onClick={() => go("docs")}>↓ DOCUMENTS <b>{downloaded.filter(f => documents.some(d => d.file === f)).length}/{documents.length}</b></button><Link href="/day2">EXIT</Link></div></header>
+    <section className="pv-shell">
+      <div className="pv-intro"><div><span>AVANT LE VOCABULAIRE</span><h1>Découvrir Primevère</h1><p>Explore l’entreprise onglet par onglet, télécharge ses documents, puis prouve que tu sais t’en servir : retrouver un prix, un contact, un label… et transmettre chaque appel au bon interlocuteur.</p></div><div className="pv-badge"><b>8</b><span>ONGLETS<br/>À EXPLORER</span></div></div>
+      <nav className="pv-tabs" aria-label="Onglets du dossier">{tabs.map((t, i) => <button type="button" key={t.id} className={`${active === t.id ? "active" : ""} ${t.id === "docs" ? "is-docs" : ""} ${t.id === "quiz" ? "is-quiz" : ""}`} aria-current={active === t.id} onClick={() => go(t.id)}><b>{n2(i)}</b><span>{t.label}</span>{t.id === "docs" && !allDownloaded && <em>À FAIRE</em>}</button>)}</nav>
+
+      <div className="pv-panel">
+        {active === "identity" && <section>
+          <div className="pv-hero"><Image src="/documents/ranges/siege.webp" alt="Le siège de Primevère" width={924} height={351}/><div><Heading n={0} title="Primevère en un regard">La beauté naturelle depuis 1958. Des soins botaniques, efficaces et responsables, pour révéler la beauté de chacun.</Heading></div></div>
+          <Sub items={[["general", "Informations générales"], ["history", "Notre histoire"], ["figures", "Chiffres clés & valeurs"], ["activity", "Activité & engagement local"]]} value={idSub} onChange={setIdSub}/>
+          {idSub === "general" && <dl className="pv-idcard">{identity.general.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>}
+          {idSub === "history" && <ol className="pv-timeline">{identity.history.map(([y, t]) => <li key={y}><strong>{y}</strong><p>{t}</p></li>)}</ol>}
+          {idSub === "figures" && <><h3 className="pv-h3">Nos chiffres clés (2024)</h3><div className="pv-facts">{identity.figures.map(([v, l]) => <article key={l}><strong>{v}</strong><span>{l}</span></article>)}</div><blockquote className="pv-quote"><span>NOTRE MISSION</span>« {identity.mission} »</blockquote><h3 className="pv-h3">Nos valeurs</h3><div className="pv-cards five">{identity.values.map(([t, d]) => <article key={t}><h4>{t}</h4><p>{d}</p></article>)}</div></>}
+          {idSub === "activity" && <><h3 className="pv-h3">Notre activité</h3><div className="pv-cards four steps">{identity.activity.map(([t, d], i) => <article key={t}><small>{n2(i)}</small><h4>{t}</h4><p>{d}</p></article>)}</div><h3 className="pv-h3">Notre engagement local</h3><ul className="pv-list">{identity.local.map(x => <li key={x}>{x}</li>)}</ul></>}
+          <Source doc="01"/>
+        </section>}
+
+        {active === "commitments" && <section>
+          <Heading n={1} title="Nos engagements, labels & responsabilité">Des soins naturels, efficaces et responsables, pour révéler la beauté de chacun tout en préservant la planète.</Heading>
+          <Sub items={[["labels", "Labels & certifications", "8"], ["concrete", "Engagements concrets", "6"], ["goals", "Objectifs à 2030", "5"], ["field", "Terrain & reconnaissances"]]} value={cmSub} onChange={setCmSub}/>
+          {cmSub === "labels" && <div className="pv-cards four">{commitments.labels.map(([t, d]) => <article key={t} className="label"><h4>{t}</h4><p>{d}</p></article>)}</div>}
+          {cmSub === "concrete" && <div className="pv-cards three">{commitments.concrete.map(([t, d]) => <article key={t}><h4>{t}</h4><p>{d}</p></article>)}</div>}
+          {cmSub === "goals" && <div className="pv-facts goals">{commitments.goals.map(([v, l]) => <article key={l}><strong>{v}</strong><span>{l}</span></article>)}</div>}
+          {cmSub === "field" && <><h3 className="pv-h3">Nos partenariats & engagements terrain</h3><div className="pv-cards four">{commitments.field.map(([t, d]) => <article key={t}><h4>{t}</h4><p>{d}</p></article>)}</div><h3 className="pv-h3">Reconnaissances</h3><div className="pv-awards">{commitments.awards.map(([t, y, by]) => <article key={t}><span>🏆 {y}</span><h4>{t}</h4><p>{by}</p></article>)}</div></>}
+          <Source doc="02"/>
+        </section>}
+
+        {active === "catalogue" && <section>
+          <Heading n={2} title="Catalogue produits">La nature en soin, chaque jour. 5 gammes de 6 références, avec leur contenance et leur prix HT.</Heading>
+          <div className="pv-claims">{catalogueClaims.map(c => <b key={c}>{c}</b>)}</div>
+          <Sub items={ranges.map(r => [r.id, `${r.n} · ${r.name}`] as [string, string])} value={range} onChange={setRange}/>
+          <div className={`pv-range r${currentRange.n}`}>
+            <div className="pv-range-head"><Image src={currentRange.image} alt={currentRange.name} width={456} height={243}/><div><span>GAMME {currentRange.n}</span><h3>{currentRange.name}</h3><strong>{currentRange.tagline}</strong><p>{currentRange.text}</p><div className="pv-tags">{currentRange.tags.map(t => <i key={t}>{t}</i>)}</div></div></div>
+            <div className="pv-table-wrap"><table className="pv-table"><thead><tr><th>Réf.</th><th>Produit</th><th>Contenance</th><th>Prix HT</th></tr></thead><tbody>{currentRange.products.map(p => <tr key={p[0]}><td><b>{p[0]}</b></td><td>{p[1]}</td><td>{p[2]}</td><td>{p[3]}</td></tr>)}</tbody></table></div>
+          </div>
+          <h3 className="pv-h3">Des ingrédients clés</h3><div className="pv-claims soft">{ingredients.map(([n, e]) => <b key={n}>{n} · <em>{e}</em></b>)}</div>
+          <Source doc="03"/>
+        </section>}
+
+        {active === "europe" && <section>
+          <Heading n={3} title="Europe · 7 distributeurs exclusifs">Des partenaires de confiance pour partager une beauté plus naturelle dans le monde entier : 15 partenaires exclusifs dans 15 pays, dont 7 en Europe.</Heading>
+          <PartnerGrid partners={regions[0].partners}/>
+          <Source doc="04"/>
+        </section>}
+
+        {active === "world" && <section>
+          <Heading n={4} title="Amériques, Asie, Océanie et autres régions">Les 8 autres distributeurs exclusifs de Primevère, hors d’Europe.</Heading>
+          <Sub items={regions.slice(1).map(r => [r.id, r.name, String(r.partners.length)] as [string, string, string])} value={world} onChange={setWorld}/>
+          <PartnerGrid partners={worldRegion.partners}/>
+          <Source doc="04"/>
+        </section>}
+
+        {active === "org" && <section>
+          <Heading n={5} title="Organigramme">Des femmes et des hommes engagés au service de nos clients, de nos partenaires et de la nature. Repère qui fait quoi : c’est ce qui te permet de transmettre chaque appel au bon interlocuteur.</Heading>
+          <Sub items={[["direction", "Direction générale", "2"], ...directions.map(d => [d.id, d.name, String(d.people.length)] as [string, string, string])]} value={dir} onChange={setDir}/>
+          <div className="pv-people">{(dir === "direction" ? leadership : directions.find(d => d.id === dir)!.people).map(p => <PersonCard key={p[0]} p={p}/>)}</div>
+          <div className="pv-callout"><b>Le bon message, à la bonne personne.</b><span>Lis la fonction de chaque interlocuteur : c’est elle qui te dit à qui transmettre une demande (achats, stock, qualité, transport, informatique, juridique…).</span></div>
+          <Source doc="05"/>
+        </section>}
+
+        {active === "docs" && <section>
+          <Heading n={6} title="Télécharge les documents">Tu vas en avoir besoin tout de suite : le quiz de l’onglet 08 te demande de retrouver des prix, des références, des contacts et le bon interlocuteur dans ces documents. Garde-les ouverts pendant que tu réponds.</Heading>
+          <div className={`pv-must ${allDownloaded ? "ok" : ""}`} role="status"><b>{allDownloaded ? "✓ Les 5 documents sont téléchargés." : `Obligatoire avant le quiz · ${downloaded.filter(f => documents.some(d => d.file === f)).length} / ${documents.length} téléchargés`}</b><span>{allDownloaded ? "Ouvre-les à côté de la LMS, puis lance le quiz." : "Télécharge chaque document ci-dessous : sans eux, tu ne pourras pas répondre au quiz."}</span></div>
+          <ul className="pv-downloads">{documents.map(d => <li key={d.file} className={downloaded.includes(d.file) ? "done" : ""}><span>{d.n}</span><div><b>{d.title}</b><small>{d.detail}</small></div><a href={d.file} download onClick={() => markDownloaded(d.file)}>{downloaded.includes(d.file) ? "✓ TÉLÉCHARGÉ" : "↓ TÉLÉCHARGER"}</a></li>)}</ul>
+          <div className="pv-next"><button type="button" onClick={() => go("quiz")} className={allDownloaded ? "" : "ghost"}>{allDownloaded ? "J’AI MES DOCUMENTS · LANCER LE QUIZ →" : "PASSER AU QUIZ →"}</button></div>
+        </section>}
+
+        {active === "quiz" && <section className="pv-quiz">
+          {!started ? <div className="pv-gate">
+            <Heading n={7} title="Manipuler les documents">{quiz.length} questions : au moins une par onglet, puis des mises en situation au téléphone où tu dois trouver, dans l’organigramme, la personne à qui transmettre l’appel.</Heading>
+            {!allDownloaded && <div className="pv-must"><b>Tu n’as pas encore téléchargé tous les documents.</b><span>Les réponses se trouvent dans les documents, pas dans ta mémoire : télécharge-les et garde-les ouverts pendant le quiz.</span></div>}
+            <div className="pv-next">{!allDownloaded && <button type="button" onClick={() => go("docs")}>↓ TÉLÉCHARGER LES DOCUMENTS</button>}<button type="button" className={allDownloaded ? "" : "ghost"} onClick={() => setStarted(true)}>{allDownloaded ? "COMMENCER LE QUIZ →" : "J’AI DÉJÀ LES DOCUMENTS, COMMENCER →"}</button></div>
+          </div> : !done ? <>
+            <div className="pv-qhead"><div><span>08 · {q.cat.toUpperCase()} · DOCUMENT {q.doc}</span>{q.mes && <div className="pv-mes"><b>☎ MISE EN SITUATION</b><p>{q.mes}</p></div>}<h2>{q.q}</h2></div><div className="pv-count"><b>{qi + 1} / {quiz.length}</b><span>SCORE {score}</span></div></div>
+            <div className="pv-progress" aria-hidden="true"><i style={{width: `${((qi + (pick !== null ? 1 : 0)) / quiz.length) * 100}%`}}/></div>
+            <div className="pv-choices">{q.choices.map((c, i) => <button type="button" key={c} disabled={pick !== null} onClick={() => choose(i)} className={pick === null ? "" : i === q.answer ? "correct" : i === pick ? "wrong" : "muted"}>{c}</button>)}</div>
+            {pick !== null && <div className="pv-feedback" aria-live="polite"><div><b>{pick === q.answer ? "Bien vu !" : "À retenir"}</b><p>{q.why}</p></div><button type="button" onClick={next}>{qi === quiz.length - 1 ? "VOIR MON RÉSULTAT →" : "QUESTION SUIVANTE →"}</button></div>}
+          </> : <div className="pv-result"><span>{score} / {quiz.length}</span><h2>{score / quiz.length >= .8 ? "Tu sais te servir des documents Primevère." : "Reprends les documents et réessaie."}</h2><ul>{byCat.map(([cat, [ok, total]]) => <li key={cat} className={ok === total ? "ok" : ""}><b>{cat}</b><span>{ok} / {total}</span></li>)}</ul><div><button type="button" onClick={reset}>↻ RECOMMENCER</button><Link href={NEXT.href}>{NEXT.label}</Link></div></div>}
+        </section>}
+
+        <div className="pv-steps">{tabIndex > 0 ? <button type="button" onClick={() => go(tabs[tabIndex - 1].id)}>← {tabs[tabIndex - 1].label}</button> : <span/>}{tabIndex < tabs.length - 1 && <button type="button" className="next" onClick={() => go(tabs[tabIndex + 1].id)}>{tabs[tabIndex + 1].label} →</button>}</div>
+      </div>
+    </section>
+  </main>;
+}
+
+function PartnerGrid({partners}: {partners: typeof regions[number]["partners"]}) {
+  return <div className="pv-partners">{partners.map(p => <article key={p[0]}><div className="pv-partner-top"><span>{p[0]}</span><b>{p[1]}</b></div><h4>{p[2]}</h4><p className="city">{p[3]}</p><p className="addr">{p[4]}</p><dl><div><dt>Contact</dt><dd>{p[5]}</dd></div><div><dt>Fonction</dt><dd>{p[6]}</dd></div><div><dt>Email</dt><dd>{p[7]}</dd></div><div><dt>Téléphone</dt><dd>{p[8]}</dd></div></dl></article>)}</div>;
+}
