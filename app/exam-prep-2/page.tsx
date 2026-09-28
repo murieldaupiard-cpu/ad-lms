@@ -23,23 +23,27 @@ export default function ExamPrep2() {
           <div>
             <span>DAY 04 · EXAM PREP · PART 2</span>
             <h1>Au téléphone avec Primevère</h1>
-            <p>Dix appels en anglais, en direct. L’IA joue l’appelant : à vous d’accueillir, de comprendre, de noter, puis de transmettre le message à la bonne personne. Utilisez un casque ou des écouteurs.</p>
+            <p>Commencez par la grille d’évaluation et le guide de l’appel, puis enchaînez les mises en situation : l’IA joue l’appelant, en direct. À vous d’accueillir, de comprendre, de noter et de transmettre le message à la bonne personne. Chaque MES est suivie de sa correction.</p>
           </div>
-          <div className="modules-progress"><span>{live} OF 10 CALLS LIVE</span><i><em style={{width: `${live * 10}%`}}/></i></div>
+          <div className="modules-progress"><span>{live + 2} OF 12 CHAPTERS LIVE</span><i><em style={{width: `${((live + 2) / 12) * 100}%`}}/></i></div>
         </div>
         <div className="home-module-grid compact-modules day3-grid">
-          <Link className="home-module amber" href="/exam-prep-2/method">
-            <div className="module-visual"><div className="module-banner-top"><small>MODULE 01</small><b>📖 GUIDE</b></div><h3>Le guide et la grille</h3><span>À LIRE D’ABORD ↗</span></div>
-            <div className="module-copy"><span>Méthode · Grille d’évaluation</span><p>Les 8 étapes d’un appel réussi, les phrases utiles et les 10 critères de la grille. Guide et grille à télécharger en PDF.</p><div><b>DÉCOUVRIR LA MÉTHODE</b><i>→</i></div></div>
+          <Link className="home-module amber" href="/exam-prep-2/grille">
+            <div className="module-visual"><div className="module-banner-top"><small>CHAPITRE 01</small><b>✅ GRILLE</b></div><h3>La grille d’évaluation</h3><span>À LIRE D’ABORD ↗</span></div>
+            <div className="module-copy"><span>L’épreuve · 10 critères</span><p>La compétence évaluée, le déroulé d’une MES, les 10 critères et les conditions de réussite. Grille à télécharger en PDF.</p><div><b>DÉCOUVRIR LA GRILLE</b><i>→</i></div></div>
           </Link>
-          {cards.map(c => c.live ? (
+          <Link className="home-module dates" href="/exam-prep-2/guide">
+            <div className="module-visual"><div className="module-banner-top"><small>CHAPITRE 02</small><b>🎙 QUIZ ORAL</b></div><h3>Le guide de l’appel</h3><span>8 ÉTAPES ↗</span></div>
+            <div className="module-copy"><span>Guide · Phrases utiles · Quiz oral</span><p>Les 8 étapes d’un appel réussi et les phrases utiles, puis un quiz où vous dites les réponses à voix haute. Guide à télécharger en PDF.</p><div><b>OUVRIR LE GUIDE</b><i>→</i></div></div>
+          </Link>
+          {cards.map((c, i) => c.live ? (
             <Link className={`home-module ${c.color}`} href={c.href} key={c.n}>
-              <div className="module-visual"><div className="module-banner-top"><small>MES {c.n}</small><b>☎ LIVE</b></div><h3>{c.title}</h3><span>DÉCROCHER ↗</span></div>
-              <div className="module-copy"><span>{c.meta}</span><p>{c.description}</p><div><b>RÉPONDRE À L’APPEL</b><i>→</i></div></div>
+              <div className="module-visual"><div className="module-banner-top"><small>CHAPITRE {String(i + 3).padStart(2, "0")}</small><b>☎ LIVE</b></div><h3>{c.title}</h3><span>DÉCROCHER ↗</span></div>
+              <div className="module-copy"><span>{c.meta}</span><p>{c.description}</p><div><b>APPEL + CORRECTION</b><i>→</i></div></div>
             </Link>
           ) : (
             <div className={`home-module ${c.color} day3-soon`} key={c.n} aria-disabled="true">
-              <div className="module-visual"><div className="module-banner-top"><small>MES {c.n}</small><b>SOON</b></div><h3>{c.title}</h3><span>IN DESIGN</span></div>
+              <div className="module-visual"><div className="module-banner-top"><small>CHAPITRE {String(i + 3).padStart(2, "0")}</small><b>SOON</b></div><h3>{c.title}</h3><span>IN DESIGN</span></div>
               <div className="module-copy"><span>{c.meta}</span><p>{c.description}</p></div>
             </div>
           ))}

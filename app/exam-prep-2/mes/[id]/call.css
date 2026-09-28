@@ -58,3 +58,4 @@
 .criteria li.pending{border-left-color:var(--gold)}.criteria b i{display:inline-grid;place-items:center;width:22px;height:22px;margin-right:8px;border-radius:50%;background:#16324f;font-style:normal;font-size:11px}
 .criteria b em{margin-left:8px;padding:2px 7px;border-radius:99px;background:#3b2f10;color:var(--gold);font-size:10px;font-style:normal;letter-spacing:.06em}
 @media(max-width:640px){.verdict{flex-direction:column;align-items:flex-start}.verdict>div:last-child{text-align:left}}
+.criteria .remediation{display:inline-block;margin-top:10px;padding:7px 11px;border:1px solid var(--gold);border-radius:9px;color:var(--gold);font-size:12px;font-weight:800;text-decoration:none}.criteria .remediation:hover{background:#3b2f10}
