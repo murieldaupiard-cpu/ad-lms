@@ -12,7 +12,7 @@ function config(s: CallScenario) {
   return {
     conversation_config: {
       agent: {first_message: "", language: "en", prompt: {prompt: s.prompt, temperature: 0.6}},
-      tts: {voice_id: s.voiceId, model_id: "eleven_flash_v2"},
+      tts: {voice_id: s.voiceId, model_id: "eleven_flash_v2", speed: 0.85},
       turn: {turn_timeout: 12},
       conversation: {max_duration_seconds: 480},
     },
