@@ -28,6 +28,10 @@ export default function ExamPrep2() {
           <div className="modules-progress"><span>{live} OF 10 CALLS LIVE</span><i><em style={{width: `${live * 10}%`}}/></i></div>
         </div>
         <div className="home-module-grid compact-modules day3-grid">
+          <Link className="home-module amber" href="/exam-prep-2/method">
+            <div className="module-visual"><div className="module-banner-top"><small>MODULE 01</small><b>📖 GUIDE</b></div><h3>Le guide et la grille</h3><span>À LIRE D’ABORD ↗</span></div>
+            <div className="module-copy"><span>Méthode · Grille d’évaluation</span><p>Les 8 étapes d’un appel réussi, les phrases utiles et les 10 critères de la grille. Guide et grille à télécharger en PDF.</p><div><b>DÉCOUVRIR LA MÉTHODE</b><i>→</i></div></div>
+          </Link>
           {cards.map(c => c.live ? (
             <Link className={`home-module ${c.color}`} href={c.href} key={c.n}>
               <div className="module-visual"><div className="module-banner-top"><small>MES {c.n}</small><b>☎ LIVE</b></div><h3>{c.title}</h3><span>DÉCROCHER ↗</span></div>
