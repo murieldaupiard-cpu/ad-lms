@@ -106,13 +106,13 @@ export default function CompanyModule() {
         </section>}
 
         {active === "europe" && <section>
-          <Heading n={3} title="Europe · 7 distributeurs exclusifs">Des partenaires de confiance pour partager une beauté plus naturelle dans le monde entier : 15 partenaires exclusifs dans 15 pays, dont 7 en Europe.</Heading>
+          <Heading n={3} title="Europe · 7 distributeurs exclusifs">Des partenaires de confiance pour partager une beauté plus naturelle dans le monde entier : 15 partenaires exclusifs dans 15 pays, sur 5 continents, dont 7 en Europe.</Heading>
           <PartnerGrid partners={regions[0].partners}/>
           <Source doc="04"/>
         </section>}
 
         {active === "world" && <section>
-          <Heading n={4} title="Amériques, Asie, Océanie et autres régions">Les 8 autres distributeurs exclusifs de Primevère, hors d’Europe.</Heading>
+          <Heading n={4} title="Amériques, Asie, Océanie et Afrique">Les 8 autres distributeurs exclusifs de Primevère, hors d’Europe.</Heading>
           <Sub items={regions.slice(1).map(r => [r.id, r.name, String(r.partners.length)] as [string, string, string])} value={world} onChange={setWorld}/>
           <PartnerGrid partners={worldRegion.partners}/>
           <Source doc="04"/>
