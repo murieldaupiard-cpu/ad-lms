@@ -90,7 +90,7 @@ ${RULES}`,
     },
     groups: {
       firstName: [["marc"]], lastName: [["deschamps"]],
-      job: [["responsable", "developpement"], ["development"], ["developpement"]],
+      job: [["responsable", "developpement"]],
       company: [["lush"]], city: [["toronto"]], country: [["canada"]],
       reason: [["retard", "endommag"], ["retard", "abim"], ["retard", "carton"], ["delay", "damag"], ["retard", "cass"]],
       action: [["rappel", "urgen"], ["rappeler", "urgen"], ["rappel", "rapidement"], ["rappel", "vite"], ["call", "back", "urgent"], ["rappel", "des que possible"]],

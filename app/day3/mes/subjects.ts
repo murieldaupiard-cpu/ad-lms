@@ -77,7 +77,7 @@ export const SUBJECTS: Subject[] = [
     groups: {
       firstName: [["maja"]],
       lastName: [["johansson"]],
-      job: [["responsable", "administrat"], ["directrice", "administrat"], ["office", "manager"]],
+      job: [["responsable", "administrat"], ["directrice", "administrat"]],
       company: [["dermarome"]],
       city: [["stockholm"]],
       country: [["suede"]],
@@ -114,7 +114,7 @@ export const SUBJECTS: Subject[] = [
     groups: {
       firstName: [["hanna"]],
       lastName: [["bohme"], ["boehme"]],
-      job: [["responsable", "achat"], ["directrice", "achat"], ["acheteuse"], ["purchasing", "manager"]],
+      job: [["responsable", "achat"], ["directrice", "achat"], ["acheteuse"]],
       company: [["bohme"], ["boehme"]],
       city: [["koln"], ["cologne"]],
       country: [["allemagne"]],
@@ -151,7 +151,7 @@ export const SUBJECTS: Subject[] = [
     groups: {
       firstName: [["francesca"]],
       lastName: [["arias"]],
-      job: [["responsable", "commercial"], ["directrice", "commercial"], ["commerciale"], ["sales", "manager"]],
+      job: [["responsable", "commercial"], ["directrice", "commercial"], ["commerciale"]],
       company: [["aguileras"]],
       city: [["madrid"]],
       country: [["espagne"]],

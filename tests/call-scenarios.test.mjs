@@ -9,6 +9,7 @@ test("MES 1 : la fiche attendue est validée et les erreurs sont refusées", () 
     countryCode: "+1", phone: "416 360 77 88", email: "m.deschamps@lushcosmetics.ca"};
   for (const [k, v] of Object.entries(ok)) assert.equal(scoreFiche(s, k, v), true, k);
   assert.equal(scoreFiche(s, "lastName", "Deschamp"), false);
+  assert.equal(scoreFiche(s, "job", "Business Development Manager"), false);
   assert.equal(scoreFiche(s, "phone", "416 360 7789"), false);
   assert.equal(scoreFiche(s, "email", "m.deschamps@lush.ca"), false);
   assert.equal(scoreFiche(s, "reason", "Problème de livraison"), false);
