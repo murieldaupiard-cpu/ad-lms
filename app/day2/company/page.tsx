@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {useEffect, useMemo, useState} from "react";
 import "./company.css";
-import {catalogueClaims, commitments, directions, documents, identity, ingredients, leadership, quiz, ranges, regions, type Person} from "./data";
+import {catalogueClaims, commitments, directions, documents, identity, ingredients, leadership, orgTips, quiz, ranges, regions, type Person} from "./data";
 
 const MODULE_LABEL = "AD · DAY 02 · MODULE 02";
 const NEXT = {href: "/day2/vocabulary", label: "VOCABULARY →"};
@@ -122,7 +122,7 @@ export default function CompanyModule() {
           <Heading n={5} title="Organigramme">Des femmes et des hommes engagés au service de nos clients, de nos partenaires et de la nature. Repère qui fait quoi : c’est ce qui te permet de transmettre chaque appel au bon interlocuteur.</Heading>
           <Sub items={[["direction", "Direction générale", "2"], ...directions.map(d => [d.id, d.name, String(d.people.length)] as [string, string, string])]} value={dir} onChange={setDir}/>
           <div className="pv-people">{(dir === "direction" ? leadership : directions.find(d => d.id === dir)!.people).map(p => <PersonCard key={p[0]} p={p}/>)}</div>
-          <div className="pv-callout"><b>Le bon message, à la bonne personne.</b><span>Lis la fonction de chaque interlocuteur : c’est elle qui te dit à qui transmettre une demande (achats, stock, qualité, transport, informatique, juridique…).</span></div>
+          <div className="pv-callout"><b>{orgTips[dir][0]}</b><span>{orgTips[dir][1]}</span></div>
           <Source doc="05"/>
         </section>}
 

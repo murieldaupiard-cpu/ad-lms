@@ -238,3 +238,13 @@ export const quiz: Question[] = [
   {cat: "Organigramme", doc: "05", mes: "Le technicien d’un prestataire doit intervenir sur une machine de l’usine tombée en panne.", q: "Qui est son interlocuteur ?", choices: ["Didier ROBERT", "François ROSSI", "Thomas BERTRAND"], answer: 0, why: "Didier ROBERT · Responsable maintenance et sécurité (Services généraux) · +33 1 47 32 10 42."},
   {cat: "Organigramme", doc: "05", mes: "Une journaliste souhaite obtenir une interview avec le président-directeur général, Pierre BOSS.", q: "À qui transmettez-vous sa demande ?", choices: ["Daniel BERGER", "Sophie MARTIN", "Caroline DUMAS"], answer: 1, why: "Sophie MARTIN · Assistante de direction · +33 1 47 32 10 02 : elle gère l’agenda et les demandes adressées au PDG."},
 ];
+
+// Astuce propre à chaque sous-onglet de l'organigramme : quelles demandes transmettre à ce service.
+export const orgTips: Record<string, [string, string]> = {
+  direction: ["Le PDG ne se dérange pas directement.", "Une demande pour Pierre BOSS (rendez-vous, interview, invitation) passe par Sophie MARTIN, son assistante de direction : c’est elle qui gère son agenda."],
+  achats: ["Ce que Primevère achète, pas ce qu’elle vend.", "Un fournisseur qui propose ses produits ou discute d’un prix : un acheteur (Xavier BELLO ou René SOCHAN). Une livraison de matières premières ou d’emballages à réceptionner : Hervé LEMPEREUR, au magasin."],
+  production: ["Fabriquer, contrôler, stocker.", "Une question sur une formule : le laboratoire (François ROSSI). Un défaut de qualité sur un lot : Claude JOURDAIN. La disponibilité d’un produit fini en stock : Pierre AUNE."],
+  commerciale: ["Tout ce qui concerne les clients.", "Un prospect en France : un chef des ventes (Jacques JOUX ou Lucien LANOAN). Un client à l’export, un grand compte ou un distributeur exclusif : Marie DUPONT. Le suivi d’une commande ou des coordonnées client à mettre à jour : Joël SALU, à l’administration des ventes."],
+  services: ["Le fonctionnement de l’entreprise au quotidien.", "Une livraison en retard ou un transporteur : Nicolas HUET. Une machine en panne ou un problème de sécurité : Didier ROBERT. L’hygiène des locaux ou l’environnement : Fatima BELDI."],
+  administrative: ["L’argent, les personnes, le droit et l’informatique.", "Une facture ou un paiement : Daniel LARUE. Une candidature ou une question RH : Gérald MARCHAND. Un contrat ou un litige : Caroline DUMAS. Le CRM, un ordinateur ou la messagerie : Thomas BERTRAND."],
+};
