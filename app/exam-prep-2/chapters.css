@@ -48,3 +48,4 @@
 .oq-retry{color:#ffc3ca!important}
 .oq-actions{display:flex;flex-wrap:wrap;gap:10px}
 .oq-skip{border:1px solid #ffffff38;border-radius:10px;padding:12px 16px;background:transparent;color:#c6d2df;font-size:11px;font-weight:900;letter-spacing:.08em;cursor:pointer}
+.oq-next{border:0;border-radius:10px;padding:14px 20px;background:var(--accent);color:#0b1a2b;font-size:12px;font-weight:900;letter-spacing:.06em;cursor:pointer}

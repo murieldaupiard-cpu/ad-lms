@@ -75,15 +75,15 @@ export default function OralQuiz({onDone}: {onDone: (score: number) => void}) {
       {result && (
         <div className={`oq-result ${result.ok ? "ok" : "ko"}`} role="status">
           <strong>{result.ok ? "✓ Bien dit !" : "✗ Pas tout à fait"}</strong>
-          <p>Vous avez dit : <i lang="en">« {result.heard} »</i></p>
+          {result.heard ? <p>Vous avez dit : <i lang="en">« {result.heard} »</i></p> : <p>Question passée.</p>}
           <p>Phrase du guide : <b lang="en">“{q.model}”</b></p>
-          {!result.ok && <p className="oq-retry">Réessayez en vous aidant de la phrase du guide, ou passez à la suite.</p>}
+          {!result.ok && <p className="oq-retry">Dites la phrase du guide à voix haute pour vous entraîner, puis passez à la suite.</p>}
         </div>
       )}
 
       <div className="oq-actions">
-        {!result && <button type="button" className="oq-skip" onClick={() => setResults(r => ({...r, [q.id]: {heard: "(passé)", ok: false}}))}>JE NE SAIS PAS, VOIR LA RÉPONSE</button>}
-        {result && <button type="button" className="vm-primary" onClick={next}>{last ? "VOIR MON RÉSULTAT →" : "QUESTION SUIVANTE →"}</button>}
+        {!result && <button type="button" className="oq-skip" onClick={() => setResults(r => ({...r, [q.id]: {heard: "", ok: false}}))}>JE NE SAIS PAS, VOIR LA RÉPONSE</button>}
+        {result && <button type="button" className="oq-next" onClick={next}>{last ? "VOIR MON RÉSULTAT →" : "QUESTION SUIVANTE →"}</button>}
       </div>
     </div>
   );
