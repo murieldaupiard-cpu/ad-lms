@@ -143,7 +143,7 @@ export type Partner = [code: string, country: string, company: string, city: str
 export const regions: {id: string; name: string; partners: Partner[]}[] = [
   {id: "europe", name: "Europe", partners: [
     ["E01", "Allemagne", "Böhme GmbH", "Berlin", "Kurfürstendamm 210, 10719 Berlin, Allemagne", "Anna Müller", "Responsable des importations", "a.mueller@boehme.de", "+49 30 2345 6789"],
-    ["E02", "Espagne", "Empresa Aguileras", "Madrid", "Calle de Serrano 118, 28006 Madrid, Espagne", "Carlos Torres", "Responsable commercial", "c.torres@aguilares.es", "+34 91 523 2210"],
+    ["E02", "Espagne", "Empresa Aguileras", "Madrid", "Calle de Serrano 118, 28006 Madrid, Espagne", "Carlos Torres", "Responsable commercial", "c.torres@aguileras.es", "+34 91 523 2210"],
     ["E03", "Irlande", "Beltine Healthcare", "Dublin", "Riverside Business Park, Block B, Unit 4, Dublin D12 X9P8, Irlande", "Sarah O’Connor", "Responsable des ventes", "s.oconnor@beltine.ie", "+353 1 672 4450"],
     ["E04", "Italie", "Firma Venere", "Milan", "Via Alessandro Manzoni 32, 20121 Milano, Italie", "Luca Bianchi", "Responsable pays", "l.bianchi@firmavenere.it", "+39 02 8545 7766"],
     ["E05", "Royaume-Uni", "Advanced Care Products Ltd", "Londres", "Unit 12, Cumberland Business Centre, 230 Old Oak Common Lane, London NW10 6DX, Royaume-Uni", "Emily Carter", "Responsable des achats", "e.carter@advancedcare.co.uk", "+44 20 7612 3444"],
