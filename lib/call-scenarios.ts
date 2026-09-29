@@ -62,7 +62,8 @@ export const SCENARIOS: CallScenario[] = [
     date: "15 janvier 2026", time: "15 h 53",
     briefing: "Vous êtes à l’accueil de Primevère, au siège à Paris. Nous sommes le 15 janvier 2026, il est 15 h 53. Cet après-midi, les responsables sont en réunion à l’extérieur : vous ne pouvez transférer aucun appel. Répondez en anglais, prenez toutes les informations, remplissez la fiche pendant l’appel, puis choisissez à qui transmettre le message.",
     voiceId: "JBFqnCBsd6RMkjVDRZzb",
-    prompt: `You are Marc Deschamps, "Responsable du développement" (Business Development Manager) at Lush Cosmetics Ltd in Toronto, Canada. Lush Cosmetics Ltd is Primevère's exclusive distributor for Canada.
+    prompt: `You are Marc Deschamps from Lush Cosmetics Ltd in Toronto, Canada. Lush Cosmetics Ltd is Primevère's exclusive distributor for Canada.
+YOUR POSITION: you never give a job title. When you introduce yourself, say "I am your exclusive distributor" (for example: "Hello, this is Marc Deschamps from Lush Cosmetics in Toronto. I am your exclusive distributor for Canada."). If the receptionist asks for your position or job title, answer only: "I am your exclusive distributor for Canada." Never say "Business Development Manager" or any other title.
 You are calling Primevère on 15 January 2026 to make a complaint about a delivery, and you want to speak to Mr Salu, the Sales Administration Manager.
 
 THE FACTS (never change them)
@@ -75,7 +76,7 @@ THE FACTS (never change them)
 - Your name: Marc Deschamps. First name M-A-R-C, surname D-E-S-C-H-A-M-P-S.
 
 HOW THE CALL GOES
-- After the receptionist greets you, introduce yourself briefly ("Hello, this is Marc Deschamps from Lush Cosmetics in Toronto") and ask to speak to Mr Salu, the Sales Administration Manager.
+- After the receptionist greets you, introduce yourself briefly ("Hello, this is Marc Deschamps from Lush Cosmetics in Toronto. I am your exclusive distributor for Canada.") and ask to speak to Mr Salu, the Sales Administration Manager.
 - IMPORTANT: you do NOT know that Mr Salu is unavailable. Until the receptionist clearly tells you he is not available, your request is simply to speak to him. If you are asked what you need or what it is about before that ("What do you need?", "What is it about?", "How can I help?"), answer that you would like to speak to Mr Salu about a problem with a delivery. Never mention a callback or a message before being told he is unavailable.
 - If the receptionist asks you to hold or says they will try to put you through, wait politely.
 - When you learn he is not available, you are disappointed but polite, and you accept to leave a message: then, and only then, ask for him to call you back urgently.
@@ -85,13 +86,13 @@ HOW THE CALL GOES
 - You are a little annoyed by the situation, but always courteous.
 ${RULES}`,
     answers: {
-      firstName: "Marc", lastName: "Deschamps", job: "Responsable du développement", company: "Lush Cosmetics Ltd", city: "Toronto", country: "Canada",
+      firstName: "Marc", lastName: "Deschamps", job: "Distributeur exclusif", company: "Lush Cosmetics Ltd", city: "Toronto", country: "Canada",
       reason: "Réclamation : livraison prévue le 5 janvier 2026, reçue le 15 janvier 2026 (retard) ; trois cartons endommagés",
       action: "Rappeler M. Deschamps en urgence", countryCode: "+1", phone: "416 360 7788", email: "m.deschamps@lushcosmetics.ca",
     },
     groups: {
       firstName: [["marc"]], lastName: [["deschamps"]],
-      job: [["responsable", "developpement"]],
+      job: [["distributeur", "exclusif"]],
       company: [["lush"]], city: [["toronto"]], country: [["canada"]],
       reason: [["retard", "endommag"], ["retard", "abim"], ["retard", "carton"], ["delay", "damag"], ["retard", "cass"]],
       action: [["rappel", "urgen"], ["rappeler", "urgen"], ["rappel", "rapidement"], ["rappel", "vite"], ["call", "back", "urgent"], ["rappel", "des que possible"]],
