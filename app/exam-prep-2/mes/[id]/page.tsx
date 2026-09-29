@@ -18,6 +18,8 @@ const ERRORS: Record<string, string> = {
   "NotFoundError": "Aucun micro n’a été trouvé sur cet appareil.",
   network: "La connexion à l’appel a échoué. Vérifiez votre connexion internet et réessayez.",
 };
+// MES de la Banque de préparation ECF : chronométrées, 20 minutes pour valider la fiche à partir du décroché.
+const TIME_LIMIT = 20 * 60;
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
 export default function CallPage() {
@@ -33,11 +35,28 @@ export default function CallPage() {
   const [recipient, setRecipient] = useState("");
   const [criteria, setCriteria] = useState<Criterion[] | null>(null);
   const [analysis, setAnalysis] = useState<"waiting" | "done" | "failed">("waiting");
+  const [deadline, setDeadline] = useState<number | null>(null);
+  const [left, setLeft] = useState(TIME_LIMIT);
+  const [timedOut, setTimedOut] = useState(false);
+  const timed = !!s?.bank;
   const call = useRef<LiveCall | null>(null);
+  const submitRef = useRef<() => void>(() => {});
   const logRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => () => call.current?.hangUp(), []);
   useEffect(() => { if (phase !== "live") return; const t = setInterval(() => setSeconds(x => x + 1), 1000); return () => clearInterval(t); }, [phase]);
+  useEffect(() => { if (timed && phase === "live" && deadline === null) setDeadline(Date.now() + TIME_LIMIT * 1000); }, [timed, phase, deadline]);
+  useEffect(() => {
+    if (deadline === null || phase === "corrected") return;
+    const tick = () => {
+      const l = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+      setLeft(l);
+      if (l === 0) { setTimedOut(true); call.current?.hangUp(); submitRef.current(); }
+    };
+    tick();
+    const t = setInterval(tick, 1000);
+    return () => clearInterval(t);
+  }, [deadline, phase]);
   useEffect(() => { logRef.current?.scrollTo({top: logRef.current.scrollHeight, behavior: "smooth"}); }, [lines]);
 
   async function answer() {
@@ -81,7 +100,8 @@ export default function CallPage() {
     }
     setAnalysis("failed");
   }
-  function restart() { call.current = null; setPhase("brief"); setLines([]); setCriteria(null); setRecipient(""); setError(""); setFiche(Object.fromEntries(FICHE.map(f => [f.key, ""])) as Record<FicheKey, string>); }
+  submitRef.current = submit;
+  function restart() { call.current = null; setDeadline(null); setLeft(TIME_LIMIT); setTimedOut(false); setPhase("brief"); setLines([]); setCriteria(null); setRecipient(""); setError(""); setFiche(Object.fromEntries(FICHE.map(f => [f.key, ""])) as Record<FicheKey, string>); }
 
   const results = useMemo(() => s ? ficheFor(s).map(f => ({...f, ok: scoreFiche(s, f.key, fiche[f.key])})) : [], [s, fiche]);
   if (!s) return <main className="call-page"><section className="call-shell"><h1>MES introuvable</h1><Link href="/exam-prep-2">← Retour</Link></section></main>;
@@ -98,10 +118,11 @@ export default function CallPage() {
   const canEdit = phase !== "brief" && phase !== "corrected";
 
   return <main className="call-page">
-    <header className="call-top"><Link href={back} className="call-back">← {section}</Link><div><small>{section} · ACCUEIL TÉLÉPHONIQUE</small><strong>MES {s.n}</strong></div><span className="call-date">{s.date} · {s.time}</span></header>
+    <header className="call-top"><Link href={back} className="call-back">← {section}</Link><div><small>{section} · ACCUEIL TÉLÉPHONIQUE</small><strong>MES {s.n}</strong></div>{timed && phase !== "brief" && <span className={`call-timer ${deadline === null ? "" : left <= 120 ? "urgent" : left <= 300 ? "warn" : ""}`} role="timer" aria-label="Temps restant">⏱ {phase === "corrected" ? (timedOut ? "TEMPS ÉCOULÉ" : `${clock(TIME_LIMIT - left)} utilisées`) : clock(left)}</span>}<span className="call-date">{s.date} · {s.time}</span></header>
 
     {phase === "brief" ? <section className="call-brief">
       <span>AVANT L’APPEL</span><h1>MES {s.n}</h1><p>{s.briefing}</p>
+      {timed && <p className="call-timed">⏱ <b>MES chronométrée : 20 minutes</b> à partir du moment où vous décrochez, pour mener l’appel, remplir la fiche, choisir le destinataire et valider. À 0:00, l’appel est coupé et votre fiche est validée automatiquement, telle quelle.</p>}
       <ul><li>Décrochez et accueillez l’appelant <b>en anglais</b>, comme à l’accueil de Primevère.</li><li>Remplissez la <b>fiche de renseignements</b> pendant l’appel (en français).</li><li>Après l’appel, choisissez le <b>destinataire du message</b> dans l’organigramme.</li><li>Utilisez un <b>casque ou des écouteurs</b> : sinon l’appelant s’entend lui-même.</li></ul>
       <button type="button" onClick={() => setPhase("ringing")}>JE SUIS PRÊT(E) →</button>
     </section> : <section className="call-grid">
@@ -119,12 +140,13 @@ export default function CallPage() {
         <div className="fiche-grid">{results.map(f => <label key={f.key} className={`${f.wide ? "wide" : ""} ${phase === "corrected" ? (f.ok ? "ok" : "ko") : ""}`}><span>{f.label}</span><input value={fiche[f.key]} disabled={!canEdit} onChange={e => setFiche(v => ({...v, [f.key]: e.target.value}))}/>{phase === "corrected" && !f.ok && <em>Attendu : {s.answers[f.key]}</em>}</label>)}</div>
         <label className={`fiche-recipient ${phase === "corrected" ? (recipientOk ? "ok" : "ko") : ""}`}><span>DESTINATAIRE DU MESSAGE</span><select value={recipient} disabled={!canEdit} onChange={e => setRecipient(e.target.value)}><option value="">— Choisir dans l’organigramme —</option>{RECIPIENTS.map(([n, r]) => <option key={n} value={n}>{n} · {r}</option>)}</select>{phase === "corrected" && <em>{recipientOk ? "✓ " : "Attendu : "}{s.recipientWhy}</em>}</label>
         {phase === "ended" && <button type="button" className="submit" onClick={submit}>VALIDER MA FICHE ET VOIR LA CORRECTION →</button>}
-        {inCall && <p className="fiche-note">Vous pourrez finir de compléter la fiche après avoir raccroché.</p>}
+        {inCall && <p className="fiche-note">Vous pourrez finir de compléter la fiche après avoir raccroché{timed ? ", dans la limite des 20 minutes" : ""}.</p>}
       </div>
     </section>}
 
     {phase === "corrected" && <section className="call-correction">
       <div className={`verdict ${analysis !== "done" ? "" : verdict.acquis ? "ok" : "ko"}`}><div><span>RÉSULTAT GLOBAL</span><strong>{analysis === "waiting" ? "Analyse en cours…" : analysis === "failed" ? "Résultat partiel" : verdict.acquis ? "ACQUIS" : "NON ACQUIS"}</strong></div><div><b>{analysis === "done" ? verdict.count : "…"} / 10</b><small>critères validés · ACQUIS si au moins 6 sur 10, dont les critères 1 (Accueil) et 5 (Coordonnées vérifiées et informations reformulées)</small></div></div>
+      {timedOut && <p className="timeout-note">⏱ Temps écoulé : votre fiche a été validée automatiquement au bout de 20 minutes. Les champs vides comptent comme faux.</p>}
       <h2>Grille d’évaluation, critère par critère</h2>
       {analysis === "waiting" && <p className="waiting" role="status">Analyse de l’appel en cours… (quelques secondes)</p>}
       {analysis === "failed" && <p className="waiting">L’analyse de l’appel n’est pas disponible pour le moment : seuls les critères 9 et 10 sont corrigés. Relisez votre conversation et les phrases modèles ci-dessous.</p>}

@@ -25,14 +25,14 @@ export default function BanqueECF() {
           <div>
             <span>DAY 06 · BANQUE DE PRÉPARATION ECF</span>
             <h1>Entraînez-vous avant l’ECF 2</h1>
-            <p>Dix nouvelles mises en situation avec Primevère, dans les conditions de l’épreuve : l’IA joue l’appelant, en direct. Appuyez-vous sur la correction de votre ECF 1 et entraînez-vous en priorité sur les critères non validés. Chaque MES est suivie de sa correction. La grille et le guide restent disponibles dans l’Exam Prep · Part 2.</p>
+            <p>Dix nouvelles mises en situation avec Primevère, dans les conditions de l’épreuve : l’IA joue l’appelant, en direct, et chaque MES est chronométrée (20 minutes à partir du décroché pour mener l’appel et valider la fiche). Appuyez-vous sur la correction de votre ECF 1 et entraînez-vous en priorité sur les critères non validés. Chaque MES est suivie de sa correction. La grille et le guide restent disponibles dans l’Exam Prep · Part 2.</p>
           </div>
           <div className="modules-progress"><span>{live} OF {MES_COUNT} MES LIVE</span><i><em style={{width: `${(live / MES_COUNT) * 100}%`}}/></i></div>
         </div>
         <div className="home-module-grid compact-modules day3-grid">
           {cards.map((c, i) => c.live ? (
             <Link className={`home-module ${c.color}`} href={c.href} key={c.n}>
-              <div className="module-visual"><div className="module-banner-top"><small>MES {String(i + 1).padStart(2, "0")}</small><b>☎ LIVE</b></div><h3>{c.title}</h3><span>DÉCROCHER ↗</span></div>
+              <div className="module-visual"><div className="module-banner-top"><small>MES {String(i + 1).padStart(2, "0")}</small><b>⏱ 20 MIN</b></div><h3>{c.title}</h3><span>DÉCROCHER ↗</span></div>
               <div className="module-copy"><span>{c.meta}</span><p>{c.description}</p><div><b>APPEL + CORRECTION</b><i>→</i></div></div>
             </Link>
           ) : (

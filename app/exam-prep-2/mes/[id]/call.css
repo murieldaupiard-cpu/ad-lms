@@ -48,6 +48,13 @@
 .criteria b{font-size:14px}.criteria p{margin:6px 0 0;color:#c4d0de;font-size:13.5px;line-height:1.55}
 .model{display:grid;gap:8px;margin:0;padding-left:22px;color:#dfe8f1;font-size:15px;line-height:1.5}
 .call-correction .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}.call-correction .actions a{background:transparent;border:1px solid var(--gold);color:var(--gold)}
+.call-timer{font:800 15px ui-monospace,Menlo,monospace;padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:#0d2034;color:#f7fbff;white-space:nowrap}
+.call-timer.warn{border-color:var(--gold);color:var(--gold)}
+.call-timer.urgent{border-color:var(--ko);color:var(--ko);animation:timer-pulse 1s ease-in-out infinite}
+@keyframes timer-pulse{50%{opacity:.55}}
+@media(prefers-reduced-motion:reduce){.call-timer.urgent{animation:none}}
+.call-timed{margin:14px 0 0;padding:12px 14px;border:1px solid var(--gold);border-radius:12px;background:#f7b93614;color:#f7fbff;line-height:1.5}
+.timeout-note{margin:0 0 18px;padding:12px 14px;border:1px solid var(--ko);border-radius:12px;background:#ff7a8614;line-height:1.5}
 @media(max-width:900px){.call-grid{grid-template-columns:1fr}.call-phone{position:static;min-height:420px}.call-date{display:none}}
 @media(max-width:560px){.fiche-grid{grid-template-columns:1fr}.scores{grid-template-columns:1fr}.call-top{flex-wrap:wrap}}
 
