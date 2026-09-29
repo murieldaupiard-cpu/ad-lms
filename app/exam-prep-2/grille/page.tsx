@@ -103,7 +103,7 @@ export default function GrilleChapter() {
               <p>Vous la remplissez en français pendant l’appel. La fonction de l’appelant doit être notée en français. Puis vous choisissez le destinataire du message.</p>
             </div>
             <div className="vm-fiche">
-              {FICHE.map(f => <div className="vm-fiche-row" key={f.key}><span className="vm-fiche-label">{f.label}</span><span className="vm-fiche-hint"/><span className="vm-fiche-blank"/></div>)}
+              {FICHE.filter(f => f.key !== "address").map(f => <div className="vm-fiche-row" key={f.key}><span className="vm-fiche-label">{f.label}</span><span className="vm-fiche-hint"/><span className="vm-fiche-blank"/></div>)}
               <div className="vm-fiche-row ad-recipient"><span className="vm-fiche-label">Destinataire du message</span><span className="vm-fiche-hint">Organigramme Primevère</span><span className="vm-fiche-blank"/></div>
             </div>
             <div className="vm-criterion">

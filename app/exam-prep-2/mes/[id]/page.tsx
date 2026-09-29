@@ -3,7 +3,7 @@ import Link from "next/link";
 import {useParams} from "next/navigation";
 import {useEffect, useMemo, useRef, useState} from "react";
 import "./call.css";
-import {FICHE, FICHE_CRITERION, RECIPIENTS, RECIPIENT_CRITERION, REQUIRED, ficheValidated, findScenario, globalResult, scoreFiche, type FicheKey} from "@/lib/call-scenarios";
+import {FICHE, FICHE_CRITERION, ficheFor, RECIPIENTS, RECIPIENT_CRITERION, REQUIRED, ficheValidated, findScenario, globalResult, scoreFiche, type FicheKey} from "@/lib/call-scenarios";
 import {LiveCall, type Line} from "@/lib/live-call";
 
 type Phase = "brief" | "ringing" | "connecting" | "live" | "ended" | "corrected";
@@ -83,15 +83,15 @@ export default function CallPage() {
   }
   function restart() { call.current = null; setPhase("brief"); setLines([]); setCriteria(null); setRecipient(""); setError(""); setFiche(Object.fromEntries(FICHE.map(f => [f.key, ""])) as Record<FicheKey, string>); }
 
-  const results = useMemo(() => s ? FICHE.map(f => ({...f, ok: scoreFiche(s, f.key, fiche[f.key])})) : [], [s, fiche]);
+  const results = useMemo(() => s ? ficheFor(s).map(f => ({...f, ok: scoreFiche(s, f.key, fiche[f.key])})) : [], [s, fiche]);
   if (!s) return <main className="call-page"><section className="call-shell"><h1>MES introuvable</h1><Link href="/exam-prep-2">← Retour</Link></section></main>;
   const back = s.bank ? "/banque-ecf" : "/exam-prep-2";
   const section = s.bank ? "BANQUE DE PRÉPARATION ECF" : "EXAM PREP · PART 2";
   const ficheScore = results.filter(r => r.ok).length;
   const recipientOk = recipient === s.recipient;
-  const ficheOk = ficheValidated(Object.fromEntries(results.map(r => [r.key, r.ok])) as Record<FicheKey, boolean>);
+  const ficheOk = ficheValidated(Object.fromEntries(results.map(r => [r.key, r.ok])) as Partial<Record<FicheKey, boolean>>, results);
   const grid = [...(criteria || s.criteria.map(c => ({id: c.id, name: c.name, result: "pending", rationale: ""}))),
-    {id: FICHE_CRITERION.id, name: FICHE_CRITERION.name, result: ficheOk ? "success" : "failure", rationale: `${ficheScore} champ${ficheScore > 1 ? "s" : ""} juste${ficheScore > 1 ? "s" : ""} sur ${FICHE.length}. Validé si au plus 1 champ est faux ou manquant, avec le nom de l’appelant et au moins un moyen de contact justes.`},
+    {id: FICHE_CRITERION.id, name: FICHE_CRITERION.name, result: ficheOk ? "success" : "failure", rationale: `${ficheScore} champ${ficheScore > 1 ? "s" : ""} juste${ficheScore > 1 ? "s" : ""} sur ${results.length}. Validé si au plus 1 champ est faux ou manquant, avec le nom de l’appelant et au moins un moyen de contact justes.`},
     {id: RECIPIENT_CRITERION.id, name: RECIPIENT_CRITERION.name, result: recipientOk ? "success" : "failure", rationale: recipientOk ? s.recipientWhy : `Vous avez choisi ${recipient || "aucun destinataire"}. ${s.recipientWhy}`}];
   const verdict = globalResult(Object.fromEntries(grid.map(c => [c.id, c.result === "success"])));
   const inCall = phase === "connecting" || phase === "live";
