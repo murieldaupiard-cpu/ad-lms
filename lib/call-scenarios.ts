@@ -1,6 +1,6 @@
 // Exam Prep · Part 2 — mises en situation d'accueil téléphonique avec un appelant joué par l'IA (ElevenLabs Agents).
 // Chaque MES : le rôle secret de l'appelant (prompt), la fiche attendue, le bon destinataire et les critères
-// d'évaluation de l'appel. Référence de la MES 1 : « MES 1 – Appel téléphonique » de Muriel (Lush Cosmetics Ltd).
+// d'évaluation de l'appel. bank: true = MES de la Banque de préparation ECF (étape 06), sinon Exam Prep Part 2. Référence de la MES 1 : « MES 1 – Appel téléphonique » de Muriel (Lush Cosmetics Ltd).
 
 export type FicheKey = "firstName" | "lastName" | "job" | "company" | "city" | "country" | "reason" | "action" | "countryCode" | "phone" | "email";
 export const FICHE: {key: FicheKey; label: string; wide?: boolean}[] = [
@@ -29,7 +29,7 @@ export const RECIPIENTS = [
 
 export type Criterion = {id: string; name: string; goal: string};
 export type CallScenario = {
-  id: string; n: number; title: string; kind: string; company: string; country: string; flag: string;
+  id: string; n: number; bank?: boolean; title: string; kind: string; company: string; country: string; flag: string;
   date: string; time: string; briefing: string;
   voiceId: string; prompt: string;
   answers: Record<FicheKey, string>; groups: Partial<Record<FicheKey, string[][]>>; phoneDigits: string[]; codeDigits: string;

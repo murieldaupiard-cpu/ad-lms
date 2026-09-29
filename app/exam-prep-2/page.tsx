@@ -7,7 +7,7 @@ import {SCENARIOS} from "@/lib/call-scenarios";
 const colors = ["alphabet", "numbers", "amber", "dates", "symbols"];
 const MES_COUNT = 2;
 const cards = Array.from({length: MES_COUNT}, (_, i) => {
-  const s = SCENARIOS.find(x => x.n === i + 1);
+  const s = SCENARIOS.find(x => !x.bank && x.n === i + 1);
   return {n: String(i + 1).padStart(2, "0"), live: !!s, href: s ? `/exam-prep-2/mes/${s.id}` : "", title: `MES ${i + 1}`, meta: s ? s.kind : "En préparation", description: s ? `${s.flag} ${s.title}. L’appelant vous parle en direct : répondez, prenez le message et trouvez le bon destinataire.` : "Une nouvelle situation d’accueil téléphonique avec Primevère.", color: colors[i % colors.length]};
 });
 

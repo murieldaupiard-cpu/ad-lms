@@ -85,6 +85,8 @@ export default function CallPage() {
 
   const results = useMemo(() => s ? FICHE.map(f => ({...f, ok: scoreFiche(s, f.key, fiche[f.key])})) : [], [s, fiche]);
   if (!s) return <main className="call-page"><section className="call-shell"><h1>MES introuvable</h1><Link href="/exam-prep-2">← Retour</Link></section></main>;
+  const back = s.bank ? "/banque-ecf" : "/exam-prep-2";
+  const section = s.bank ? "BANQUE DE PRÉPARATION ECF" : "EXAM PREP · PART 2";
   const ficheScore = results.filter(r => r.ok).length;
   const recipientOk = recipient === s.recipient;
   const ficheOk = ficheValidated(Object.fromEntries(results.map(r => [r.key, r.ok])) as Record<FicheKey, boolean>);
@@ -96,7 +98,7 @@ export default function CallPage() {
   const canEdit = phase !== "brief" && phase !== "corrected";
 
   return <main className="call-page">
-    <header className="call-top"><Link href="/exam-prep-2" className="call-back">← EXAM PREP · PART 2</Link><div><small>EXAM PREP · PART 2 · ACCUEIL TÉLÉPHONIQUE</small><strong>MES {s.n}</strong></div><span className="call-date">{s.date} · {s.time}</span></header>
+    <header className="call-top"><Link href={back} className="call-back">← {section}</Link><div><small>{section} · ACCUEIL TÉLÉPHONIQUE</small><strong>MES {s.n}</strong></div><span className="call-date">{s.date} · {s.time}</span></header>
 
     {phase === "brief" ? <section className="call-brief">
       <span>AVANT L’APPEL</span><h1>MES {s.n}</h1><p>{s.briefing}</p>
@@ -129,7 +131,7 @@ export default function CallPage() {
       <ol className="criteria">{grid.map((c, i) => <li key={c.id} className={c.result}><b><i>{i + 1}</i>{c.result === "success" ? "✓" : c.result === "failure" ? "✗" : c.result === "pending" ? "…" : "?"} {c.name}{REQUIRED.includes(c.id) && <em>obligatoire</em>}</b><p>{c.result === "pending" ? "En cours d’analyse…" : c.rationale || "Pas assez d’éléments dans l’appel pour évaluer ce critère."}</p>{(c.result === "failure" || c.result === "unknown") && <Link className="remediation" href={i < 8 ? `/exam-prep-2/guide?etape=${i + 1}` : "/exam-prep-2/grille?section=fiche"}>🔁 {i < 8 ? `Revoir l’étape ${i + 1} du guide (chapitre 02)` : "Revoir la fiche et le destinataire (chapitre 01)"} →</Link>}</li>)}</ol>
       <h2>Des phrases modèles</h2>
       <ol className="model">{s.model.map(m => <li key={m}>{m}</li>)}</ol>
-      <div className="actions"><button type="button" onClick={restart}>↻ REFAIRE L’APPEL</button><Link href="/exam-prep-2">TOUTES LES MES →</Link></div>
+      <div className="actions"><button type="button" onClick={restart}>↻ REFAIRE L’APPEL</button><Link href={back}>TOUTES LES MES →</Link></div>
     </section>}
   </main>;
 }

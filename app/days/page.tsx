@@ -50,6 +50,15 @@ const days = [
   },
   {
     number: "06",
+    title: "Banque de préparation ECF",
+    description: "Ten more live phone calls with Primevère to train on the criteria you missed in ECF 1, before ECF 2.",
+    href: "/banque-ecf",
+    activities: "10 appels · en préparation",
+    progress: 0,
+    live: true,
+  },
+  {
+    number: "07",
     title: "ECF · Part 2",
     description: "Final certification exam, correction and individual support plan.",
     href: "/day5",
@@ -58,7 +67,7 @@ const days = [
     live: true,
   },
   {
-    number: "07",
+    number: "08",
     title: "Votre retour d’expérience",
     description: "Un questionnaire de clôture sur votre progression, votre autonomie et les améliorations à apporter au parcours.",
     href: "/satisfaction",
