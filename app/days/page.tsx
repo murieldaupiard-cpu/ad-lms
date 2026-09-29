@@ -41,15 +41,6 @@ const days = [
   },
   {
     number: "05",
-    title: "Exam Prep · Part 3",
-    description: "The final stage of your exam preparation, before the certification exams.",
-    href: "/day3",
-    activities: "To be built",
-    progress: 0,
-    live: false,
-  },
-  {
-    number: "06",
     title: "ECF · Part 1",
     description: "Your first certification exam, reviewed and discussed with Muriel.",
     href: "/day4",
@@ -58,7 +49,7 @@ const days = [
     live: true,
   },
   {
-    number: "07",
+    number: "06",
     title: "ECF · Part 2",
     description: "Final certification exam, correction and individual support plan.",
     href: "/day5",
@@ -67,7 +58,7 @@ const days = [
     live: true,
   },
   {
-    number: "08",
+    number: "07",
     title: "Votre retour d’expérience",
     description: "Un questionnaire de clôture sur votre progression, votre autonomie et les améliorations à apporter au parcours.",
     href: "/satisfaction",
