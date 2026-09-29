@@ -16,7 +16,7 @@ export type Situation = {
 export const SITUATIONS: Situation[] = [
   {
     id: 1,
-    brief: "Maja appelle de Copenhague pour Nordic Bloom Cosmetics. Elle a découvert la gamme de cosmétiques biologiques sur un salon, n’a jamais commandé, et souhaite recevoir les tarifs et les conditions de livraison.",
+    brief: "Olivia appelle de Copenhague pour Nordic Bloom Cosmetics. Elle a découvert la gamme de cosmétiques biologiques sur un salon, n’a jamais commandé, et souhaite recevoir les tarifs et les conditions de livraison.",
     categories: ["Prospect", "Client existant", "Distributeur exclusif"],
     category: 0,
     companies: ["Nordic Bloom Cosmetics", "Primevère", "Aurora Beauty Ltd"],
