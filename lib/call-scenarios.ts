@@ -186,7 +186,347 @@ ${RULES}`,
   },
 ];
 
-export const findScenario = (id: string) => SCENARIOS.find(s => s.id === id);
+// ————— Banque de préparation ECF (étape 06) : 7 MES chronométrées, d'après les fiches de Muriel (septembre 2026) —————
+// Aucun appelant ne demande une personne précise : c'est à l'apprenant de trouver le bon destinataire.
+const J = " Rédige la justification en français, en une ou deux phrases.";
+const bankBriefing = (date: string, time: string) => `Vous êtes à l’accueil de Primevère, au siège à Paris. Nous sommes le ${date}, il est ${time}. Les responsables sont en réunion à l’extérieur : vous ne pouvez transférer aucun appel. Répondez en anglais, prenez toutes les informations, remplissez la fiche pendant l’appel, puis choisissez à qui transmettre le message. Vous avez 20 minutes.`;
+const noPerson = (need: string) => `- You do NOT ask to speak to a specific person and you never name anyone at Primevère. If the receptionist asks who you would like to speak to, answer: "No one in particular, I just need ${need}." If the receptionist suggests a name or a department, answer: "That's fine, as long as the right person gets the message." Never confirm or suggest who the right person is: that is the receptionist's job.
+- If the receptionist asks you to hold, wait politely.`;
+const noTitle = (who: string) => `YOUR POSITION: you never give a job title. ${who} Never give any other title.`;
+const bankCriteria = (motif: string, demande: string): Criterion[] => [
+  {id: "accueil", name: "Accueil", goal: "At the start of the call, the user (the receptionist) greeted the caller professionally, gave their own name, named the company (Primevère) and offered help (for example: 'Good morning, Primevère, Anna speaking. How may I help you?')." + J},
+  {id: "identification", name: "Identification de l’appelant", goal: "The user asked for and obtained the caller's name and company, and asked the caller to spell his or her name (or checked its spelling)." + J},
+  {id: "orientation", name: "Orientation de l’appel / prise de message", goal: "The caller did not ask for a specific person. The user dealt with this correctly by offering to take a message / take down the information so that it would be passed on to the right person (no call can be transferred)." + J},
+  {id: "motif", name: "Compréhension du motif de l’appel", goal: motif + J},
+  {id: "coordonnees", name: "Coordonnées vérifiées et informations reformulées", goal: "The user asked for and read back the caller's contact details to check them (at least the phone number and/or the email address), AND summarised (rephrased) the main information of the call to make sure it was understood (for example 'So, to recap…'). Both parts are required." + J},
+  {id: "demande", name: "Prise en compte de la demande et engagement", goal: demande + J},
+  {id: "cloture", name: "Clôture", goal: "The user ended the call politely: checked whether there was anything else, thanked the caller and said goodbye." + J},
+  ENGLISH,
+];
+const REASON_MOVE = [["coordonnees"], ["adresse", "telephone"], ["adresse", "mail"], ["demenag"]];
+const ACTION_UPDATE = [["mettre a jour"], ["mise a jour"], ["actualis"], ["modifier"], ["enregistr", "nouvelle"]];
+const DISTRIB = [["distributeur", "exclusif"]];
+
+export const BANK: CallScenario[] = [
+  {
+    id: "b1", n: 1, bank: true, title: "Réclamation qualité d’un distributeur exclusif", kind: "Distributeur exclusif · Réclamation qualité", company: "Haney Inc.", country: "États-Unis", flag: "🇺🇸",
+    date: "12 février 2026", time: "11 h 15", briefing: bankBriefing("12 février 2026", "11 h 15"),
+    voiceId: "cgSgspJ2msm6clMCkdW9",
+    prompt: `You are Jessica Haney from Haney Inc. in New York, United States. Haney Inc. is Primevère's exclusive distributor for the United States (customer number A03).
+${noTitle(`When you introduce yourself, say: "Hello, this is Jessica Haney from Haney Inc. in New York. I am your exclusive distributor for the United States." If asked for your position, answer only: "I am your exclusive distributor for the United States."`)}
+You are calling Primevère on 12 February 2026 to make a quality complaint.
+
+THE FACTS (never change them)
+- On 2 February 2026 you received a shipment of "Day Cream with Hawthorn", product reference VC002 ("V, C, zero, zero, two").
+- The batch number is L2601-114 (say "L, two, six, zero, one, dash, one, one, four").
+- Problems: the texture of the cream is more liquid than usual, and the smell has changed. Some of your customers are reporting the problem and returning the products.
+- What you want: someone at Primevère must check this batch, and call you back as soon as possible. It is urgent.
+- Your phone: +1 212 555 0199. Your email: j.haney@haneyinc.com, said as "j, dot, haney, at, haneyinc, dot, com". If asked, spell Haney: H-A-N-E-Y.
+
+HOW THE CALL GOES
+- After the receptionist greets you, introduce yourself and say you are calling about a quality problem with a recent delivery.
+${noPerson("someone to check this batch and call me back")}
+- Explain the problem step by step, answering the receptionist's questions: product, reference, delivery date, batch number, texture, smell, customer returns.
+- You are worried and a little annoyed, but always courteous. Insist that it is urgent.
+${RULES}`,
+    answers: {
+      firstName: "Jessica", lastName: "Haney", job: "Distributeur exclusif", company: "Haney Inc.", city: "New York", country: "États-Unis",
+      reason: "Réclamation qualité : lot L2601-114 de Crème de jour à l’aubépine (VC002), reçu le 2 février 2026 ; texture plus liquide et odeur différente ; retours clients",
+      action: "Vérifier le lot et rappeler Mme Haney en urgence", countryCode: "+1", phone: "212 555 0199", email: "j.haney@haneyinc.com",
+    },
+    groups: {
+      firstName: [["jessica"]], lastName: [["haney"]], job: DISTRIB, company: [["haney"]], city: [["new york"]], country: [["etats unis"], ["etats-unis"], ["amerique"]],
+      reason: [["l2601"], ["vc002"], ["aubepine", "texture"], ["aubepine", "odeur"], ["lot", "texture"], ["lot", "odeur"], ["creme", "texture"]],
+      action: [["verif", "rappel"], ["control", "rappel"], ["analys", "rappel"], ["rappel", "urgen"], ["verif", "lot"]],
+    },
+    phoneDigits: ["2125550199", "12125550199", "0012125550199"], codeDigits: "1",
+    recipient: "Claude JOURDAIN",
+    recipientWhy: "Claude JOURDAIN, Responsable assurance qualité de la fabrication : Haney Inc. est bien un distributeur exclusif, mais le sujet est un problème de qualité sur un lot (texture, odeur). Quand le sujet est technique, on transmet au spécialiste : ici, la qualité.",
+    criteria: bankCriteria(
+      "The user understood the reason for the call — a quality complaint about batch L2601-114 of Day Cream with Hawthorn (VC002), received on 2 February: more liquid texture, different smell, customers returning the products — by asking questions and/or rephrasing to check these details.",
+      "The user acknowledged the complaint and its urgency, and committed to what would happen next: the message would be passed on to the person concerned so that the batch is checked and the caller is called back as soon as possible."),
+    model: [
+      "Good morning, Primevère, [your name] speaking. How may I help you?",
+      "I’m sorry to hear that. Could you give me the product reference and the batch number, please?",
+      "When did you receive the delivery? … And what exactly is the problem with the cream?",
+      "So, to recap: batch L2601-114 of Day Cream with Hawthorn, received on 2 February; the texture is more liquid and the smell has changed. Is that right?",
+      "I understand it’s urgent. I’ll pass on your message to the person in charge so that the batch is checked, and you’ll be called back as soon as possible.",
+    ],
+  },
+  {
+    id: "b2", n: 2, bank: true, title: "Changement de coordonnées d’un distributeur exclusif", kind: "Distributeur exclusif · Changement de coordonnées", company: "Laboratório Koni", country: "Brésil", flag: "🇧🇷",
+    date: "15 mars 2026", time: "10 h 20", briefing: bankBriefing("15 mars 2026", "10 h 20"),
+    voiceId: "iP95p4xoKVk53GoZ742B",
+    prompt: `You are João Ferreira from Laboratório Koni, Primevère's exclusive distributor for Brazil (customer number A01).
+${noTitle(`When you introduce yourself, say: "Hello, this is João Ferreira from Laboratório Koni. I am your exclusive distributor for Brazil." If asked for your position, answer only: "I am your exclusive distributor for Brazil."`)}
+You are calling Primevère on 15 March 2026: your company has moved from São Paulo to a new office in Rio de Janeiro, and you want Primevère to update its records.
+
+THE FACTS (never change them)
+- New address: Avenida das Américas, 500, Barra da Tijuca, Rio de Janeiro, RJ 22640-100, Brazil. Say the postcode as "two, two, six, four, zero, dash, one, zero, zero". If asked, spell Américas (A-M-E-R-I-C-A-S) and Tijuca (T-I-J-U-C-A).
+- New phone number: +55 21 3487 5566 (country code 55, then 21 3487 5566).
+- New email: j.ferreira@koni.com.br, said as "j, dot, ferreira, at, koni, dot, com, dot, B, R".
+- Your name: João Ferreira. If asked, spell: first name J-O-A-O, surname F-E-R-R-E-I-R-A. Company: Laboratório Koni (K-O-N-I).
+- No callback is needed, unless there is a problem with the new details.
+
+HOW THE CALL GOES
+- After the receptionist greets you, introduce yourself and say you are calling because your contact details have changed.
+${noPerson("to let you know that our contact details have changed")}
+- Give the new details one by one, when the receptionist is ready or asks for them: address, then phone number, then email. Do not give everything in one go.
+- You are friendly and calm.
+${RULES}`,
+    answers: {
+      firstName: "João", lastName: "Ferreira", job: "Distributeur exclusif", company: "Laboratório Koni", city: "Rio de Janeiro", country: "Brésil",
+      address: "Avenida das Américas, 500, Barra da Tijuca, Rio de Janeiro – RJ 22640-100, Brésil",
+      reason: "Changement de coordonnées (déménagement à Rio de Janeiro) : nouvelle adresse, nouveau numéro de téléphone et nouvelle adresse email",
+      action: "Mettre à jour la base de données avec les nouvelles coordonnées", countryCode: "+55", phone: "21 3487 5566", email: "j.ferreira@koni.com.br",
+    },
+    groups: {
+      firstName: [["joao"]], lastName: [["ferreira"]], job: DISTRIB, company: [["koni"]], city: [["rio"]], country: [["bresil"]],
+      address: [["americas", "500"], ["americas", "22640"], ["americas", "barra"]],
+      reason: REASON_MOVE, action: ACTION_UPDATE,
+    },
+    phoneDigits: ["2134875566", "02134875566", "552134875566", "00552134875566"], codeDigits: "55",
+    recipient: "Marie DUPONT",
+    recipientWhy: "Marie DUPONT, Responsable export et grands comptes : Laboratório Koni est le distributeur exclusif de Primevère au Brésil. Les distributeurs exclusifs sont des partenaires à l’export, suivis par Marie Dupont : c’est à elle de faire mettre à jour leurs coordonnées.",
+    criteria: bankCriteria(
+      "The user understood the reason for the call — the exclusive distributor has moved to Rio de Janeiro and has a new postal address, a new phone number and a new email address — by asking questions and/or rephrasing to check these details.",
+      "The user acknowledged the request and committed to what would happen next: the new contact details would be passed on to the person concerned so that the records/database are updated."),
+    model: [
+      "Good morning, Primevère, [your name] speaking. How may I help you?",
+      "Of course, I’ll take down your new details. Could you give me your new address, please? … Could you spell that, please?",
+      "Let me read that back to you: plus five five, two one, three four eight seven, five five six six. Is that correct?",
+      "So, to recap: your new address is Avenida das Américas, 500, Barra da Tijuca, Rio de Janeiro, with a new phone number and a new email address.",
+      "I’ll pass on your new details to the person concerned so that our database is updated.",
+    ],
+  },
+  {
+    id: "b3", n: 3, bank: true, title: "Question d’exclusivité d’un distributeur exclusif", kind: "Distributeur exclusif · Question d’exclusivité", company: "Natural Care Australia", country: "Australie", flag: "🇦🇺",
+    date: "18 mars 2026", time: "16 h 30", briefing: bankBriefing("18 mars 2026", "16 h 30"),
+    voiceId: "XrExE9yKIg1WjnnlVkGX",
+    prompt: `You are Sarah Williams from Natural Care Australia in Sydney, Primevère's exclusive distributor for Australia (customer number OC01).
+${noTitle(`When you introduce yourself, say: "Hello, this is Sarah Williams from Natural Care Australia in Sydney. I am your exclusive distributor for Australia." If asked for your position, answer only: "I am your exclusive distributor for Australia."`)}
+You are calling Primevère on 18 March 2026 about a problem with your exclusivity.
+
+THE FACTS (never change them)
+- You noticed that a website called "BeautyDirect AU" (say "Beauty Direct, A, U"; spell BeautyDirect if asked) is selling some Primevère products in Australia at a lower price than yours.
+- This is causing confusion with your customers, and you think it is against the exclusivity terms in your contract with Primevère.
+- What you want: someone at Primevère must check the situation, especially the exclusivity clause of your contract, and call you back as soon as possible.
+- Your phone: +61 2 9234 1100. Your email: s.williams@naturalcare.com.au, said as "s, dot, williams, at, naturalcare, dot, com, dot, A, U". If asked, spell Williams: W-I-L-L-I-A-M-S.
+
+HOW THE CALL GOES
+- After the receptionist greets you, introduce yourself and say you are calling about a problem with your exclusivity in Australia.
+${noPerson("someone to check our contract and call me back")}
+- Explain the situation step by step, answering the receptionist's questions.
+- You are concerned and firm, but always polite.
+${RULES}`,
+    answers: {
+      firstName: "Sarah", lastName: "Williams", job: "Distributeur exclusif", company: "Natural Care Australia", city: "Sydney", country: "Australie",
+      reason: "Le site BeautyDirect AU vend des produits Primevère en Australie moins cher : non-respect possible de la clause d’exclusivité",
+      action: "Vérifier la clause d’exclusivité du contrat et rappeler Mme Williams", countryCode: "+61", phone: "2 9234 1100", email: "s.williams@naturalcare.com.au",
+    },
+    groups: {
+      firstName: [["sarah"]], lastName: [["williams"]], job: DISTRIB, company: [["natural care"]], city: [["sydney"]], country: [["australie"]],
+      reason: [["beautydirect"], ["beauty direct"], ["exclusivit"], ["site", "prix"], ["site", "moins cher"]],
+      action: [["clause"], ["contrat", "rappel"], ["exclusivit", "rappel"], ["verif", "contrat"]],
+    },
+    phoneDigits: ["292341100", "0292341100", "61292341100", "0061292341100"], codeDigits: "61",
+    recipient: "Caroline DUMAS",
+    recipientWhy: "Caroline DUMAS, Responsable juridique : Natural Care Australia est bien un distributeur exclusif, mais la demande porte sur une clause de son contrat (l’exclusivité). Quand le sujet est juridique, on transmet au service juridique.",
+    criteria: bankCriteria(
+      "The user understood the reason for the call — a website called BeautyDirect AU is selling Primevère products in Australia at a lower price, which the exclusive distributor thinks is against the exclusivity clause of its contract — by asking questions and/or rephrasing to check these details.",
+      "The user acknowledged the caller's concern and committed to what would happen next: the message would be passed on to the person concerned so that the contract / exclusivity clause is checked and the caller is called back."),
+    model: [
+      "Good afternoon, Primevère, [your name] speaking. How may I help you?",
+      "Could you tell me the name of the website, please? … Could you spell it, please?",
+      "So, to recap: the website BeautyDirect AU is selling our products in Australia at a lower price, and you think this is against your exclusivity. Is that right?",
+      "I understand your concern. I’ll pass on your message to the person in charge so that your contract is checked, and you’ll be called back as soon as possible.",
+    ],
+  },
+  {
+    id: "b4", n: 4, bank: true, title: "Changement de coordonnées d’un distributeur exclusif", kind: "Distributeur exclusif · Changement de coordonnées", company: "Firma Venere", country: "Italie", flag: "🇮🇹",
+    date: "10 avril 2026", time: "11 h 22", briefing: bankBriefing("10 avril 2026", "11 h 22"),
+    voiceId: "XB0fDUnXU5powFXDhCwa",
+    prompt: `You are Ginevra Questano from Firma Venere in Milan, Primevère's exclusive distributor for Italy (customer number E04).
+${noTitle(`When you introduce yourself, say: "Hello, this is Ginevra Questano from Firma Venere in Milan. I am your exclusive distributor for Italy." If asked for your position, answer only: "I am your exclusive distributor for Italy."`)}
+You are calling Primevère on 10 April 2026: your company has recently moved to a new office, and you want Primevère to update its records.
+
+THE FACTS (never change them)
+- New address: Via Monte Napoleone 18, 20121 Milano, Italy. If asked, spell Napoleone: N-A-P-O-L-E-O-N-E.
+- New phone number: +39 02 8754 3210 (country code 39, then 02 8754 3210).
+- New email: g.questano@firmavenere.it, said as "g, dot, questano, at, firmavenere, dot, I, T".
+- Your name: Ginevra Questano. If asked, spell: first name G-I-N-E-V-R-A, surname Q-U-E-S-T-A-N-O. Company: Firma Venere (V-E-N-E-R-E).
+- No callback is needed, unless there is a problem with the new details.
+
+HOW THE CALL GOES
+- After the receptionist greets you, introduce yourself and say you are calling because your contact details have changed.
+${noPerson("to let you know that our contact details have changed")}
+- Give the new details one by one, when the receptionist is ready or asks for them: address, then phone number, then email. Do not give everything in one go.
+- You are friendly and calm.
+${RULES}`,
+    answers: {
+      firstName: "Ginevra", lastName: "Questano", job: "Distributeur exclusif", company: "Firma Venere", city: "Milan", country: "Italie",
+      address: "Via Monte Napoleone 18, 20121 Milano, Italie",
+      reason: "Changement de coordonnées (déménagement) : nouvelle adresse, nouveau numéro de téléphone et nouvelle adresse email",
+      action: "Mettre à jour la base de données avec les nouvelles coordonnées", countryCode: "+39", phone: "02 8754 3210", email: "g.questano@firmavenere.it",
+    },
+    groups: {
+      firstName: [["ginevra"]], lastName: [["questano"]], job: DISTRIB, company: [["venere"]], city: [["milan"]], country: [["italie"]],
+      address: [["napoleone", "18"], ["montenapoleone", "18"]],
+      reason: REASON_MOVE, action: ACTION_UPDATE,
+    },
+    phoneDigits: ["0287543210", "287543210", "390287543210", "00390287543210"], codeDigits: "39",
+    recipient: "Marie DUPONT",
+    recipientWhy: "Marie DUPONT, Responsable export et grands comptes : Firma Venere est le distributeur exclusif de Primevère en Italie. Les distributeurs exclusifs sont des partenaires à l’export, suivis par Marie Dupont : c’est à elle de faire mettre à jour leurs coordonnées.",
+    criteria: bankCriteria(
+      "The user understood the reason for the call — the exclusive distributor for Italy has moved to a new office and has a new postal address, a new phone number and a new email address — by asking questions and/or rephrasing to check these details.",
+      "The user acknowledged the request and committed to what would happen next: the new contact details would be passed on to the person concerned so that the records/database are updated."),
+    model: [
+      "Good morning, Primevère, [your name] speaking. How may I help you?",
+      "Of course, I’ll take down your new details. What is your new address, please? … Could you spell the street name, please?",
+      "Let me read that back to you: plus three nine, zero two, eight seven five four, three two one zero. Is that correct?",
+      "So, to recap: your new address is Via Monte Napoleone 18, 20121 Milano, with a new phone number and a new email address.",
+      "I’ll pass on your new details to the person concerned so that our database is updated.",
+    ],
+  },
+  {
+    id: "b5", n: 5, bank: true, title: "Renouvellement de la licence CRM", kind: "Fournisseur · Licence CRM", company: "TechSolutions Inc.", country: "Canada", flag: "🇨🇦",
+    date: "25 avril 2026", time: "14 h 30", briefing: bankBriefing("25 avril 2026", "14 h 30"),
+    voiceId: "cjVigY5qzO86Huf0OWal",
+    prompt: `You are David Thompson from TechSolutions Inc. in Toronto, Canada. TechSolutions is the company that provides Primevère's CRM software (you are a supplier, not a customer).
+${noTitle(`When you introduce yourself, say: "Hello, this is David Thompson from TechSolutions in Toronto, the company that provides your CRM software." If asked for your position, answer only: "I manage your account at TechSolutions."`)}
+You are calling Primevère on 25 April 2026 about the renewal of the CRM licence.
+
+THE FACTS (never change them)
+- Primevère's current CRM licence expires on 30 April 2026.
+- To renew it, you need to receive, before 28 April: the confirmation of the number of users (currently 25), and a signed purchase order.
+- If you do not receive these documents by 28 April, access to the CRM will be suspended.
+- What you want: someone at Primevère must send you this information and call you back as soon as possible.
+- Your phone: +1 416 555 8732. Your email: d.thompson@techsolutions.ca, said as "d, dot, thompson, at, techsolutions, dot, C, A". If asked, spell Thompson: T-H-O-M-P-S-O-N, and TechSolutions: T-E-C-H-S-O-L-U-T-I-O-N-S.
+
+HOW THE CALL GOES
+- After the receptionist greets you, introduce yourself and say you are calling about the renewal of the CRM licence.
+${noPerson("the person who deals with your CRM to get my message")}
+- Explain step by step, answering the receptionist's questions: expiry date, number of users, purchase order, deadline, risk of suspension.
+- You are friendly and professional, but you insist on the deadline.
+${RULES}`,
+    answers: {
+      firstName: "David", lastName: "Thompson", job: "Fournisseur du logiciel CRM", company: "TechSolutions Inc.", city: "Toronto", country: "Canada",
+      reason: "Renouvellement de la licence CRM, qui expire le 30 avril 2026 ; sans les documents avant le 28 avril, l’accès au CRM sera suspendu",
+      action: "Confirmer le nombre d’utilisateurs (25) et envoyer un bon de commande signé avant le 28 avril ; rappeler M. Thompson", countryCode: "+1", phone: "416 555 8732", email: "d.thompson@techsolutions.ca",
+    },
+    groups: {
+      firstName: [["david"]], lastName: [["thompson"]], job: [["fournisseur"], ["prestataire"]], company: [["techsolution"], ["tech solution"]], city: [["toronto"]], country: [["canada"]],
+      reason: [["licence", "30"], ["licence", "expir"], ["license", "expir"], ["crm", "renouvel"], ["licence", "renouvel"]],
+      action: [["bon de commande"], ["commande", "28"], ["utilisateur", "28"], ["utilisateur", "commande"]],
+    },
+    phoneDigits: ["4165558732", "14165558732", "0014165558732"], codeDigits: "1",
+    recipient: "Thomas BERTRAND",
+    recipientWhy: "Thomas BERTRAND, Responsable informatique : TechSolutions est le fournisseur du logiciel CRM de Primevère. La licence d’un logiciel, le nombre d’utilisateurs et le risque de suspension de l’accès relèvent du service informatique.",
+    criteria: bankCriteria(
+      "The user understood the reason for the call — the CRM licence expires on 30 April 2026; the supplier needs the confirmation of the number of users (25) and a signed purchase order before 28 April, otherwise access to the CRM will be suspended — by asking questions and/or rephrasing to check these details.",
+      "The user acknowledged the request and the deadline, and committed to what would happen next: the message would be passed on to the person concerned so that the information and the signed purchase order are sent before 28 April, and the caller is called back."),
+    model: [
+      "Good afternoon, Primevère, [your name] speaking. How may I help you?",
+      "Could you tell me when the licence expires, please? … And what do you need from us?",
+      "So, to recap: the licence expires on 30 April, and you need the number of users and a signed purchase order before 28 April. Otherwise, access to the CRM will be suspended. Is that right?",
+      "I understand the deadline. I’ll pass on your message to the person in charge today so that you receive the documents before 28 April.",
+    ],
+  },
+  {
+    id: "b6", n: 6, bank: true, title: "Changement de coordonnées d’un distributeur exclusif", kind: "Distributeur exclusif · Changement de coordonnées", company: "Sakura Cosme", country: "Japon", flag: "🇯🇵",
+    date: "27 mai 2026", time: "15 h 47", briefing: bankBriefing("27 mai 2026", "15 h 47"),
+    voiceId: "pFZP5JQG7iQjIQuC4Bku",
+    prompt: `You are Yuki Tanaka from Sakura Cosme in Tokyo, Primevère's exclusive distributor for Japan (customer number AS02).
+${noTitle(`When you introduce yourself, say: "Hello, this is Yuki Tanaka from Sakura Cosme in Tokyo. I am your exclusive distributor for Japan." If asked for your position, answer only: "I am your exclusive distributor for Japan."`)}
+You are calling Primevère on 27 May 2026: your company has recently moved to a new office, and you want Primevère to update its records.
+
+THE FACTS (never change them)
+- New address: 1-9-1 Marunouchi, Chiyoda-ku, Tokyo 100-0005, Japan. Say the street number as "one, dash, nine, dash, one" and the postcode as "one, zero, zero, dash, zero, zero, zero, five". If asked, spell Marunouchi (M-A-R-U-N-O-U-C-H-I) and Chiyoda (C-H-I-Y-O-D-A).
+- New phone number: +81 3 6206 4410 (country code 81, then 3 6206 4410).
+- Your email address has NOT changed: y.tanaka@sakuracosme.jp, said as "y, dot, tanaka, at, sakuracosme, dot, J, P". Say clearly that the email address remains the same.
+- Your name: Yuki Tanaka. If asked, spell: first name Y-U-K-I, surname T-A-N-A-K-A. Company: Sakura Cosme (S-A-K-U-R-A, C-O-S-M-E).
+- No callback is needed, unless there is a problem with the new details.
+
+HOW THE CALL GOES
+- After the receptionist greets you, introduce yourself and say you are calling because your contact details have changed.
+${noPerson("to let you know that our contact details have changed")}
+- Give the new details one by one, when the receptionist is ready or asks for them: address, then phone number, then say that the email address is unchanged. Do not give everything in one go.
+- You are very polite and calm.
+${RULES}`,
+    answers: {
+      firstName: "Yuki", lastName: "Tanaka", job: "Distributeur exclusif", company: "Sakura Cosme", city: "Tokyo", country: "Japon",
+      address: "1-9-1 Marunouchi, Chiyoda-ku, Tokyo 100-0005, Japon",
+      reason: "Changement de coordonnées (déménagement) : nouvelle adresse et nouveau numéro de téléphone ; adresse email inchangée",
+      action: "Mettre à jour la base de données avec les nouvelles coordonnées", countryCode: "+81", phone: "3 6206 4410", email: "y.tanaka@sakuracosme.jp",
+    },
+    groups: {
+      firstName: [["yuki"]], lastName: [["tanaka"]], job: DISTRIB, company: [["sakura"]], city: [["tokyo"]], country: [["japon"]],
+      address: [["marunouchi", "1-9-1"], ["marunouchi", "100-0005"], ["marunouchi", "1 9 1"], ["marunouchi", "chiyoda"]],
+      reason: [["coordonnees"], ["adresse", "telephone"], ["demenag"]], action: ACTION_UPDATE,
+    },
+    phoneDigits: ["362064410", "0362064410", "81362064410", "0081362064410"], codeDigits: "81",
+    recipient: "Marie DUPONT",
+    recipientWhy: "Marie DUPONT, Responsable export et grands comptes : Sakura Cosme est le distributeur exclusif de Primevère au Japon. Les distributeurs exclusifs sont des partenaires à l’export, suivis par Marie Dupont : c’est à elle de faire mettre à jour leurs coordonnées.",
+    criteria: bankCriteria(
+      "The user understood the reason for the call — the exclusive distributor for Japan has moved and has a new postal address and a new phone number, while the email address remains the same — by asking questions and/or rephrasing to check these details.",
+      "The user acknowledged the request and committed to what would happen next: the new contact details would be passed on to the person concerned so that the records/database are updated."),
+    model: [
+      "Good afternoon, Primevère, [your name] speaking. How may I help you?",
+      "Of course, I’ll take down your new details. What is your new address, please? … Could you spell that, please?",
+      "And has your email address changed too? … So it’s still y dot tanaka at sakuracosme dot j p. Is that correct?",
+      "So, to recap: your new address is 1-9-1 Marunouchi, Chiyoda-ku, Tokyo, your new number is plus eight one, three, six two zero six, four four one zero, and your email address is the same.",
+      "I’ll pass on your new details to the person concerned so that our database is updated.",
+    ],
+  },
+  {
+    id: "b7", n: 7, bank: true, title: "Prospect : fabrication en marque blanche", kind: "Prospect · Marque blanche", company: "Pure Essence Ltd", country: "Royaume-Uni", flag: "🇬🇧",
+    date: "12 juin 2026", time: "16 h 30", briefing: bankBriefing("12 juin 2026", "16 h 30"),
+    voiceId: "N2lVS1w4EtoT3dr4eOWO",
+    prompt: `You are James Walker from Pure Essence Ltd, a natural skincare brand based in London, United Kingdom. You have never worked with Primevère: you are a new prospect.
+${noTitle(`When you introduce yourself, say: "Hello, this is James Walker from Pure Essence, a natural skincare brand based in London." If asked for your position, answer only: "I'm in charge of this project at Pure Essence."`)}
+You are calling Primevère on 12 June 2026.
+
+THE FACTS (never change them)
+- You do NOT want to distribute Primevère products. You want Primevère to manufacture a range of skincare products under your own brand, Pure Essence: this is called "private label".
+- The launch is planned for this autumn.
+- You would like information about: the product range available for private label, the minimum order quantities, the prices, and the delivery lead times.
+- What you want: someone at Primevère must send you this information and call you back.
+- Your phone: +44 20 7946 0958. Your email: james.walker@pureessence.co.uk, said as "james, dot, walker, at, pureessence, dot, co, dot, U, K". If asked, spell Walker (W-A-L-K-E-R) and Pure Essence (P-U-R-E, E-S-S-E-N-C-E).
+- If the receptionist asks whether you want to become a distributor, say: "No, we want you to manufacture products under our own brand."
+
+HOW THE CALL GOES
+- After the receptionist greets you, introduce yourself and say you are interested in having products manufactured under your own brand.
+${noPerson("the right person to get my request")}
+- Explain your request step by step, answering the receptionist's questions.
+- You are enthusiastic and polite.
+${RULES}`,
+    answers: {
+      firstName: "James", lastName: "Walker", job: "", company: "Pure Essence Ltd", city: "Londres", country: "Royaume-Uni",
+      reason: "Nouveau prospect : souhaite faire fabriquer une gamme de soins sous sa propre marque (marque blanche) pour un lancement à l’automne",
+      action: "Lui envoyer des informations (gamme possible, quantités minimales de commande, prix, délais de livraison) et le rappeler", countryCode: "+44", phone: "20 7946 0958", email: "james.walker@pureessence.co.uk",
+    },
+    groups: {
+      firstName: [["james"]], lastName: [["walker"]], company: [["pure essence"], ["pureessence"]], city: [["londres"], ["london"]], country: [["royaume"], ["angleterre"]],
+      reason: [["marque blanche"], ["private label"], ["propre marque"], ["sa marque"], ["leur marque"]],
+      action: [["quantit", "prix"], ["gamme", "prix"], ["tarif", "quantit"], ["prix", "delai"], ["information", "rappel"]],
+    },
+    phoneDigits: ["2079460958", "02079460958", "442079460958", "00442079460958"], codeDigits: "44",
+    recipient: "Marie DUPONT",
+    recipientWhy: "Marie DUPONT, Responsable export et grands comptes : Pure Essence est un nouveau prospect étranger (Royaume-Uni). Les prospects à l’international sont suivis par Marie Dupont. Attention : ce n’est pas une demande de distribution (le Royaume-Uni a déjà un distributeur exclusif), mais une demande de fabrication en marque blanche.",
+    criteria: bankCriteria(
+      "The user understood the reason for the call — a new prospect (a UK skincare brand) wants Primevère to manufacture products under its own brand (private label) for a launch in autumn, and asks for the product range, minimum order quantities, prices and delivery lead times — by asking questions and/or rephrasing to check these details.",
+      "The user acknowledged the request and committed to what would happen next: the request would be passed on to the person concerned so that the caller receives the information and is called back."),
+    model: [
+      "Good afternoon, Primevère, [your name] speaking. How may I help you?",
+      "Just to make sure I understand: you would like us to manufacture products under your own brand, is that right?",
+      "What information would you like to receive? … When is the launch planned?",
+      "So, to recap: you would like information about the product range, minimum order quantities, prices and delivery lead times, for a launch this autumn.",
+      "I’ll pass on your request to the person in charge, and you’ll be contacted as soon as possible.",
+    ],
+  },
+];
+
+export const findScenario = (id: string) => [...SCENARIOS, ...BANK].find(s => s.id === id);
 
 export const normalise = (v: string) => v.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9@+.-]+/g, " ").trim();
 export const onlyDigits = (v: string) => v.replace(/\D/g, "");
@@ -205,8 +545,8 @@ export function scoreFiche(s: CallScenario, key: FicheKey, value: string): boole
 export const FICHE_CRITERION = {id: "fiche", name: "Fiche de renseignements complète et exacte"};
 export const RECIPIENT_CRITERION = {id: "destinataire", name: "Message transmis au bon destinataire"};
 export const REQUIRED = ["accueil", "coordonnees"];
-// Champs de la fiche pour une MES : le champ Adresse n'apparaît que si la MES a une adresse attendue.
-export const ficheFor = (s: CallScenario) => FICHE.filter(f => f.key !== "address" || !!s.answers.address);
+// Champs de la fiche pour une MES : un champ sans réponse attendue (Adresse, ou Fonction d'un prospect) n'apparaît pas.
+export const ficheFor = (s: CallScenario) => FICHE.filter(f => !!s.answers[f.key]);
 export function ficheValidated(ok: Partial<Record<FicheKey, boolean>>, fields = FICHE): boolean {
   const wrong = fields.filter(f => !ok[f.key]).length;
   return wrong <= 1 && ok.lastName && (ok.phone || ok.email);

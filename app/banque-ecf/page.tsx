@@ -1,14 +1,14 @@
 import Link from "next/link";
 import "../day3/day3.css";
 import "../infinity-signature.css";
-import {SCENARIOS} from "@/lib/call-scenarios";
+import {BANK} from "@/lib/call-scenarios";
 
-// Banque de préparation ECF (étape 06, entre ECF 1 et ECF 2) — 10 MES d'accueil téléphonique Primevère,
+// Banque de préparation ECF (étape 06, entre ECF 1 et ECF 2) — 7 MES d'accueil téléphonique Primevère,
 // appelant joué par l'IA. Sert de remédiation après l'ECF 1. Les MES sont dans lib/call-scenarios.ts (bank: true).
 const colors = ["alphabet", "numbers", "amber", "dates", "symbols"];
-const MES_COUNT = 10;
+const MES_COUNT = 7;
 const cards = Array.from({length: MES_COUNT}, (_, i) => {
-  const s = SCENARIOS.find(x => x.bank && x.n === i + 1);
+  const s = BANK.find(x => x.n === i + 1);
   return {n: String(i + 1).padStart(2, "0"), live: !!s, href: s ? `/exam-prep-2/mes/${s.id}` : "", title: `MES ${i + 1}`, meta: s ? s.kind : "En préparation", description: s ? `${s.flag} ${s.title}. L’appelant vous parle en direct : répondez, prenez le message et trouvez le bon destinataire.` : "Une nouvelle situation d’accueil téléphonique avec Primevère.", color: colors[i % colors.length]};
 });
 
@@ -25,7 +25,7 @@ export default function BanqueECF() {
           <div>
             <span>DAY 06 · BANQUE DE PRÉPARATION ECF</span>
             <h1>Entraînez-vous avant l’ECF 2</h1>
-            <p>Dix nouvelles mises en situation avec Primevère, dans les conditions de l’épreuve : l’IA joue l’appelant, en direct, et chaque MES est chronométrée (20 minutes à partir du décroché pour mener l’appel et valider la fiche). Appuyez-vous sur la correction de votre ECF 1 et entraînez-vous en priorité sur les critères non validés. Chaque MES est suivie de sa correction. La grille et le guide restent disponibles dans l’Exam Prep · Part 2.</p>
+            <p>Sept nouvelles mises en situation avec Primevère, dans les conditions de l’épreuve : l’IA joue l’appelant, en direct, et chaque MES est chronométrée (20 minutes à partir du décroché pour mener l’appel et valider la fiche). Appuyez-vous sur la correction de votre ECF 1 et entraînez-vous en priorité sur les critères non validés. Chaque MES est suivie de sa correction. La grille et le guide restent disponibles dans l’Exam Prep · Part 2.</p>
           </div>
           <div className="modules-progress"><span>{live} OF {MES_COUNT} MES LIVE</span><i><em style={{width: `${(live / MES_COUNT) * 100}%`}}/></i></div>
         </div>

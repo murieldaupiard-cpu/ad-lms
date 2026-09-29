@@ -51,9 +51,9 @@ const days = [
   {
     number: "06",
     title: "Banque de préparation ECF",
-    description: "Ten timed live phone calls with Primevère (20 minutes each) to train on the criteria you missed in ECF 1, before ECF 2.",
+    description: "Seven timed live phone calls with Primevère (20 minutes each) to train on the criteria you missed in ECF 1, before ECF 2.",
     href: "/banque-ecf",
-    activities: "10 appels · en préparation",
+    activities: "7 appels chronométrés",
     progress: 0,
     live: true,
   },
