@@ -3,9 +3,10 @@ import "../day3/day3.css";
 import "../infinity-signature.css";
 import {SCENARIOS} from "@/lib/call-scenarios";
 
-// Exam Prep · Part 2 — 10 mises en situation d'accueil téléphonique avec un appelant joué par l'IA.
+// Exam Prep · Part 2 — 2 mises en situation d'accueil téléphonique avec un appelant joué par l'IA.
 const colors = ["alphabet", "numbers", "amber", "dates", "symbols"];
-const cards = Array.from({length: 10}, (_, i) => {
+const MES_COUNT = 2;
+const cards = Array.from({length: MES_COUNT}, (_, i) => {
   const s = SCENARIOS.find(x => x.n === i + 1);
   return {n: String(i + 1).padStart(2, "0"), live: !!s, href: s ? `/exam-prep-2/mes/${s.id}` : "", title: `MES ${i + 1}`, meta: s ? s.kind : "En préparation", description: s ? `${s.flag} ${s.title}. L’appelant vous parle en direct : répondez, prenez le message et trouvez le bon destinataire.` : "Une nouvelle situation d’accueil téléphonique avec Primevère.", color: colors[i % colors.length]};
 });
@@ -25,7 +26,7 @@ export default function ExamPrep2() {
             <h1>Au téléphone avec Primevère</h1>
             <p>Commencez par la grille d’évaluation et le guide de l’appel, puis enchaînez les mises en situation : l’IA joue l’appelant, en direct. À vous d’accueillir, de comprendre, de noter et de transmettre le message à la bonne personne. Chaque MES est suivie de sa correction.</p>
           </div>
-          <div className="modules-progress"><span>{live + 2} OF 12 CHAPTERS LIVE</span><i><em style={{width: `${((live + 2) / 12) * 100}%`}}/></i></div>
+          <div className="modules-progress"><span>{live + 2} OF {MES_COUNT + 2} CHAPTERS LIVE</span><i><em style={{width: `${((live + 2) / (MES_COUNT + 2)) * 100}%`}}/></i></div>
         </div>
         <div className="home-module-grid compact-modules day3-grid">
           <Link className="home-module amber" href="/exam-prep-2/grille">

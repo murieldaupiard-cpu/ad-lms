@@ -33,9 +33,9 @@ const days = [
   {
     number: "04",
     title: "Exam Prep · Part 2",
-    description: "Ten live phone calls with Primevère: the AI plays the caller, you take the message and route it to the right person.",
+    description: "Two live phone calls with Primevère: the AI plays the caller, you take the message and route it to the right person.",
     href: "/exam-prep-2",
-    activities: "10 appels · 1 disponible",
+    activities: "2 appels · 1 disponible",
     progress: 0,
     live: true,
   },
