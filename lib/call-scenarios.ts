@@ -2,7 +2,7 @@
 // Chaque MES : le rôle secret de l'appelant (prompt), la fiche attendue, le bon destinataire et les critères
 // d'évaluation de l'appel. bank: true = MES de la Banque de préparation ECF (étape 06), sinon Exam Prep Part 2. Référence de la MES 1 : « MES 1 – Appel téléphonique » de Muriel (Lush Cosmetics Ltd).
 
-export type FicheKey = "firstName" | "lastName" | "job" | "company" | "city" | "country" | "address" | "reason" | "action" | "countryCode" | "phone" | "email";
+export type FicheKey = "firstName" | "lastName" | "job" | "company" | "city" | "country" | "address" | "event" | "reason" | "action" | "countryCode" | "phone" | "email";
 export const FICHE: {key: FicheKey; label: string; wide?: boolean}[] = [
   {key: "firstName", label: "Prénom"},
   {key: "lastName", label: "Nom"},
@@ -11,6 +11,7 @@ export const FICHE: {key: FicheKey; label: string; wide?: boolean}[] = [
   {key: "city", label: "Ville"},
   {key: "country", label: "Pays"},
   {key: "address", label: "Adresse", wide: true},
+  {key: "event", label: "Événement / match concerné", wide: true},
   {key: "reason", label: "Motif de l’appel", wide: true},
   {key: "action", label: "Demande et action attendue", wide: true},
   {key: "countryCode", label: "Indicatif international"},
@@ -30,10 +31,10 @@ export const RECIPIENTS = [
 
 export type Criterion = {id: string; name: string; goal: string};
 export type CallScenario = {
-  id: string; n: number; bank?: boolean; title: string; kind: string; company: string; country: string; flag: string;
+  id: string; n: number; bank?: boolean; ecf?: 1 | 2; org?: "pitch"; title: string; kind: string; company: string; country: string; flag: string;
   date: string; time: string; briefing: string;
   voiceId: string; prompt: string;
-  answers: Record<Exclude<FicheKey, "address">, string> & {address?: string}; groups: Partial<Record<FicheKey, string[][]>>; phoneDigits: string[]; codeDigits: string;
+  answers: Record<Exclude<FicheKey, "address" | "event">, string> & {address?: string; event?: string}; groups: Partial<Record<FicheKey, string[][]>>; phoneDigits: string[]; codeDigits: string;
   recipient: string; recipientWhy: string;
   criteria: Criterion[];
   model: string[];
@@ -526,7 +527,154 @@ ${RULES}`,
   },
 ];
 
-export const findScenario = (id: string) => [...SCENARIOS, ...BANK].find(s => s.id === id);
+// ————— ECF (étapes 05 et 07) : entreprise Pitch Vision, inconnue des apprenants, d'après les fiches de rôle de Muriel (septembre 2026) —————
+// ecf: 1 = ECF · Part 1 (Stridex Sportswear), ecf: 2 = ECF · Part 2 (Falcon Skyways). Chronométrées : 20 minutes.
+const PITCH_RULES = RULES.replace("Primevère (a French cosmetics company, head office in Paris)", "Pitch Vision (a French company based at the Stade de France, near Paris, that sells LED advertising, VIP hospitality and events at the stadium)");
+const pitchBriefing = (date: string, time: string) => `Vous êtes assistant(e) de direction chez Pitch Vision, au Stade de France. Nous sommes le ${date}, il est ${time}. Les responsables sont en réunion à l’extérieur : vous ne pouvez transférer aucun appel. Répondez en anglais, prenez toutes les informations, remplissez la fiche pendant l’appel, puis choisissez à qui transmettre le message à l’aide des documents Pitch Vision (annuaire, organigramme, tableau des clients). Vous avez 20 minutes.`;
+const pitchCriteria = (motif: string, demande: string): Criterion[] => [
+  {id: "accueil", name: "Accueil", goal: "At the start of the call, the user (the receptionist) greeted the caller professionally, gave their own name, named the company (Pitch Vision) and offered help (for example: 'Good morning, Pitch Vision, Anna speaking. How may I help you?')." + J},
+  {id: "identification", name: "Identification de l’appelant", goal: "The user asked for and obtained the caller's name and company, and asked the caller to spell his or her name (or checked its spelling)." + J},
+  {id: "orientation", name: "Orientation de l’appel / prise de message", goal: "The caller asked to speak to 'the person who handles this' without giving a name. Since no call can be transferred, the user explained politely that the person was not available and offered to take a message so that it would be passed on to the right person." + J},
+  {id: "motif", name: "Compréhension du motif de l’appel", goal: motif + J},
+  {id: "coordonnees", name: "Coordonnées vérifiées et informations reformulées", goal: "The user asked for and read back the caller's contact details to check them (at least the phone number and/or the email address), AND summarised (rephrased) the main information of the call to make sure it was understood (for example 'So, to recap…'). Both parts are required." + J},
+  {id: "demande", name: "Prise en compte de la demande et engagement", goal: demande + J},
+  {id: "cloture", name: "Clôture", goal: "The user ended the call politely: checked whether there was anything else, thanked the caller and said goodbye." + J},
+  ENGLISH,
+];
+const pitchNoName = (answer: string) => `- You do NOT know the name of the right person at Pitch Vision and you never give a name. If the receptionist asks who you would like to speak to, answer: "${answer}" If the receptionist suggests a name or a department, answer: "That's fine, as long as the right person gets my message." Never confirm or suggest who the right person is: that is the receptionist's job.
+- If the receptionist asks you to hold, wait politely. When you are told the person is not available, accept to leave a message.`;
+
+export const ECF: CallScenario[] = [
+  {
+    id: "e1", n: 1, ecf: 1, org: "pitch", title: "Demande d’informations d’un client existant", kind: "Client existant · Publicité LED", company: "Stridex Sportswear", country: "États-Unis", flag: "🇺🇸",
+    date: "20 avril 2026", time: "10 h 24", briefing: pitchBriefing("lundi 20 avril 2026", "10 h 24"),
+    voiceId: "TX3LPaxmHKxFdv7VOQHJ",
+    prompt: `You are David Miller, Marketing Manager at Stridex Sportswear, a sportswear brand based in New York, United States. Stridex is an existing client of Pitch Vision (customer code C12): you already advertised with Pitch Vision last season.
+You are calling Pitch Vision on Monday 20 April 2026.
+
+WHAT YOU SAY SPONTANEOUSLY (spread over the conversation, not all at once)
+- "Hello, this is David Miller from Stridex Sportswear in New York. We already advertised with you last season."
+- "We were very impressed by the visibility at the Stade de France during the France versus Spain match last Saturday, 18 April. We are interested in advertising during the next France matches of the international break."
+- "Could you please send me the list of prices, the different options (duration, location of the screens, formats) and the availability for the upcoming matches?"
+- "You can send me the information by email. Feel free to call me back if you need more details. It's not urgent."
+
+THE FACTS (never change them)
+- Next France matches you are interested in (give them only if asked which matches): Saturday 20 June 2026, France versus England, and Tuesday 23 June 2026, France versus Portugal, both at the Stade de France.
+- Budget (only if asked): "Around 100,000 euros for the campaign."
+- Job title (only if asked): "I'm the Marketing Manager."
+- Your email: david.miller@stridexsports.com, said as "david, dot, miller, at, stridexsports, dot, com". If asked, spell stridexsports: S-T-R-I-D-E-X-S-P-O-R-T-S.
+- Your phone: +1 212 555 0147, said as "plus one... two, one, two... five, five, five... zero, one, four, seven".
+- Spelling: first name D-A-V-I-D, surname M-I-L-L-E-R, company S-T-R-I-D-E-X.
+
+HOW THE CALL GOES
+- After the receptionist greets you, introduce yourself and ask to speak to the person who handles your account.
+${pitchNoName("The person who handles our account.")}
+- Answer the receptionist's questions step by step. You are friendly, enthusiastic and relaxed.
+${PITCH_RULES}`,
+    answers: {
+      firstName: "David", lastName: "Miller", job: "Responsable marketing", company: "Stridex Sportswear", city: "New York", country: "États-Unis",
+      event: "France – Angleterre (20 juin 2026) et France – Portugal (23 juin 2026)",
+      reason: "Client existant : intéressé par de la publicité LED pendant les prochains matchs de l’équipe de France",
+      action: "Lui envoyer par email les tarifs, les options (durée, emplacement des écrans, formats) et les disponibilités ; le rappeler si besoin", countryCode: "+1", phone: "212 555 0147", email: "david.miller@stridexsports.com",
+    },
+    groups: {
+      firstName: [["david"]], lastName: [["miller"]], job: [["responsable", "marketing"], ["directeur", "marketing"], ["chef", "marketing"]],
+      company: [["stridex"]], city: [["new york"]], country: [["etats"], ["usa"], ["amerique"]],
+      event: [["angleterre"], ["portugal"], ["20 juin"], ["23 juin"], ["prochain", "match"]],
+      reason: [["publicit"], ["pub", "match"], ["ecran"], ["led"], ["annonce", "match"]],
+      action: [["tarif"], ["prix"], ["option"], ["disponibilit"], ["envoy", "information"]],
+    },
+    phoneDigits: ["2125550147", "12125550147", "0012125550147"], codeDigits: "1",
+    recipient: "Rafael GOMEZ",
+    recipientWhy: "Rafael GOMEZ, Business Developer Amériques (poste 75 12) : Stridex Sportswear est un client existant (code C12). Pour un client existant, on contacte la personne indiquée dans la colonne « Suivi par » du tableau des clients : pour Stridex, c’est Rafael Gomez.",
+    criteria: pitchCriteria(
+      "The user understood the reason for the call — an existing client (Stridex Sportswear) was impressed by the visibility during France vs Spain on 18 April and wants to advertise during the next France matches (20 June vs England, 23 June vs Portugal); he wants the prices, the options (duration, location of the screens, formats) and the availability — by asking questions and/or rephrasing to check these details.",
+      "The user acknowledged the request and committed to what would happen next: the message would be passed on to the person in charge of the account so that the caller receives the prices, options and availability by email (and is called back if needed)."),
+    model: [
+      "Good morning, Pitch Vision, [your name] speaking. How may I help you?",
+      "May I have your name and your company, please? … Could you spell your surname, please?",
+      "I’m afraid the person who handles your account is not available at the moment. May I take a message?",
+      "Which matches are you interested in? … Do you have a budget in mind?",
+      "So, to recap: you would like the prices, the options — duration, location of the screens and formats — and the availability for France vs England on 20 June and France vs Portugal on 23 June. Is that right?",
+      "Let me read back your email address: david dot miller at stridexsports dot com. Is that correct?",
+      "I’ll pass on your message today, and you’ll receive the information by email. Thank you for calling, Mr Miller. Goodbye.",
+    ],
+  },
+  {
+    id: "e2", n: 2, ecf: 2, org: "pitch", title: "Modification d’une réservation VIP", kind: "Partenaire premium · Services VIP", company: "Falcon Skyways", country: "Émirats arabes unis", flag: "🇦🇪",
+    date: "1er juillet 2026", time: "10 h 36", briefing: pitchBriefing("mercredi 1er juillet 2026", "10 h 36"),
+    voiceId: "EXAVITQu4vr4xnSDxMaL",
+    prompt: `You are Fatima Al Mansoori, Events Manager at Falcon Skyways, an airline based in Dubai, United Arab Emirates. Falcon Skyways is a premium partner and an existing client of Pitch Vision (customer code C18).
+You are calling Pitch Vision on Wednesday 1 July 2026.
+
+WHAT YOU SAY SPONTANEOUSLY (spread over the conversation, not all at once)
+- "Hello, this is Fatima Al Mansoori from Falcon Skyways in Dubai."
+- "We are a premium partner and we already have a VIP hospitality package for 12 guests for the France versus Argentina match on Sunday, 26 July 2026."
+- "We would like to increase our reservation to 18 guests, so 6 additional VIP places."
+- "We are also interested in a private stadium tour before the match for our guests, and we would need an English/French interpreter to accompany the group."
+- "Could you please send us the updated offer with the price for the 6 additional VIP places, the private tour and the interpreter service?"
+- "You can send me the information by email, or call me back if you need more details."
+
+THE FACTS (never change them)
+- Current booking: VIP hospitality package, 12 guests. New total: 18 guests (6 more).
+- Match: France versus Argentina, gala match, Sunday 26 July 2026, Stade de France.
+- Extra services: a private stadium tour before the match, and an English/French interpreter for the group.
+- Urgent? "No, it's not urgent." Budget (only if asked): "As a premium partner, our budget is flexible."
+- Job title (only if asked): "I'm the Events Manager."
+- Your email: f.almansoori@falconskyways.ae, said as "f, dot, almansoori, at, falconskyways, dot, A, E". If asked, spell almansoori: A-L-M-A-N-S-O-O-R-I, and falconskyways: F-A-L-C-O-N-S-K-Y-W-A-Y-S.
+- Your phone: +971 4 555 7823, said as "plus nine, seven, one... four... five, five, five... seven, eight, two, three".
+- Spelling: first name F-A-T-I-M-A, surname "A-L, then M-A-N-S-O-O-R-I" (two words: Al Mansoori).
+
+HOW THE CALL GOES
+- After the receptionist greets you, introduce yourself and ask to speak to the person in charge of stadium relations and events.
+${pitchNoName("The person in charge of stadium relations and events.")}
+- Explain your request step by step, answering the receptionist's questions. You are warm, precise and professional.
+${PITCH_RULES}`,
+    answers: {
+      firstName: "Fatima", lastName: "Al Mansoori", job: "Responsable événementiel", company: "Falcon Skyways", city: "Dubaï", country: "Émirats arabes unis",
+      event: "France – Argentine, match de gala, dimanche 26 juillet 2026",
+      reason: "Partenaire premium : passer la réservation VIP de 12 à 18 invités (6 places VIP en plus), visite privée du stade avant le match et interprète anglais/français",
+      action: "Lui envoyer par email l’offre mise à jour avec le prix des 6 places VIP, de la visite privée et de l’interprète ; la rappeler si besoin", countryCode: "+971", phone: "4 555 7823", email: "f.almansoori@falconskyways.ae",
+    },
+    groups: {
+      firstName: [["fatima"]], lastName: [["mansoori"]], job: [["responsable", "evenement"], ["directrice", "evenement"], ["chargee", "evenement"], ["responsable", "evenementiel"]],
+      company: [["falcon"]], city: [["dubai"]], country: [["emirats"], ["eau"]],
+      event: [["argentine"], ["26 juillet"]],
+      reason: [["18"], ["6", "vip"], ["six", "vip"], ["vip", "visite"], ["vip", "interprete"]],
+      action: [["offre"], ["devis"], ["tarif"], ["prix"]],
+    },
+    phoneDigits: ["45557823", "045557823", "97145557823", "0097145557823"], codeDigits: "971",
+    recipient: "Pierre LEMAIRE",
+    recipientWhy: "Pierre LEMAIRE, Responsable relations stade & événements (poste 75 70) : la demande porte sur l’organisation d’un événement au stade (places VIP supplémentaires, visite privée, interprète). Règle 3 de l’organigramme : événement au stade → Pierre Lemaire. C’est aussi lui qui suit Falcon Skyways (C18) dans le tableau des clients.",
+    criteria: pitchCriteria(
+      "The user understood the reason for the call — a premium partner (Falcon Skyways) with a VIP package for 12 guests for France vs Argentina on 26 July wants to increase it to 18 guests (6 additional VIP places), and would like a private stadium tour before the match and an English/French interpreter — by asking questions and/or rephrasing to check these details.",
+      "The user acknowledged the request and committed to what would happen next: the message would be passed on to the person in charge so that the caller receives the updated offer with prices by email (and is called back if needed)."),
+    model: [
+      "Good morning, Pitch Vision, [your name] speaking. How may I help you?",
+      "May I have your name, please? … Could you spell your surname, please?",
+      "I’m sorry, the person in charge of events is not available at the moment. May I take a message?",
+      "How many guests do you have at the moment? … And how many would you like in total?",
+      "So, to recap: you would like 6 additional VIP places, for 18 guests in total, a private stadium tour before the match and an English/French interpreter, for France vs Argentina on 26 July. Is that right?",
+      "Let me read back your phone number: plus nine seven one, four, five five five, seven eight two three. Is that correct?",
+      "I’ll pass on your request, and you’ll receive the updated offer by email. Thank you for calling, Ms Al Mansoori. Goodbye.",
+    ],
+  },
+];
+
+// Destinataires possibles pour les MES Pitch Vision : l'annuaire interne de Pitch Vision.
+export const PITCH_RECIPIENTS = [
+  ["Alexandre MOREL", "Directeur général"],
+  ["Pierre LEMAIRE", "Responsable relations stade & événements"], ["Isabelle GARNIER", "Coordinatrice logistique des événements"], ["Maxime PETIT", "Accueil VIP sur place"], ["Léa MOREAU", "Chargée de billetterie"],
+  ["Thomas DUBOIS", "Directeur commercial (CCO)"], ["Rafael GOMEZ", "Business Developer Amériques"], ["Camille RICHARD", "Responsable marketing"], ["Antoine LEROY", "Chargé de partenariats"],
+  ["Julien DAVID", "Responsable opérations LED"], ["Marc LEGRAND", "Technicien régie LED"], ["Nicolas BLANC", "Coordinateur terrain"],
+  ["Victoria KIM", "Responsable création & contenu"], ["Lucas RIVIÈRE", "Motion designer"], ["Manon DURAND", "Graphiste multimédia"],
+  ["Sophie LENOIR", "Responsable administrative et financière"], ["Émilie CARTIER", "Gestionnaire administratif"], ["Karim BENOIT", "Comptabilité"],
+  ["Marion LECLERC", "Responsable communication"], ["Clément RENAUD", "Attaché de presse"],
+] as const;
+export const recipientsFor = (s: CallScenario): readonly (readonly [string, string])[] => s.org === "pitch" ? PITCH_RECIPIENTS : RECIPIENTS;
+export const orgName = (s: CallScenario) => s.org === "pitch" ? "Pitch Vision" : "Primevère";
+
+export const findScenario = (id: string) => [...SCENARIOS, ...BANK, ...ECF].find(s => s.id === id);
 
 export const normalise = (v: string) => v.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9@+.-]+/g, " ").trim();
 export const onlyDigits = (v: string) => v.replace(/\D/g, "");

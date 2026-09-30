@@ -42,7 +42,7 @@ const days = [
   {
     number: "05",
     title: "ECF · Part 1",
-    description: "Your first certification exam, reviewed and discussed with Muriel.",
+    description: "Your first certification exam: a live phone call with Pitch Vision, a company you have never seen before.",
     href: "/day4",
     activities: "4 modules",
     progress: 0,
@@ -60,9 +60,9 @@ const days = [
   {
     number: "07",
     title: "ECF · Part 2",
-    description: "Final certification exam, correction and individual support plan.",
+    description: "Final certification exam: a new live call with Pitch Vision, correction and individual support plan.",
     href: "/day5",
-    activities: "1 module live",
+    activities: "3 modules live",
     progress: 0,
     live: true,
   },

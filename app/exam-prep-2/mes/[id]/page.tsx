@@ -3,7 +3,7 @@ import Link from "next/link";
 import {useParams} from "next/navigation";
 import {useEffect, useMemo, useRef, useState} from "react";
 import "./call.css";
-import {FICHE, FICHE_CRITERION, ficheFor, RECIPIENTS, RECIPIENT_CRITERION, REQUIRED, ficheValidated, findScenario, globalResult, scoreFiche, type FicheKey} from "@/lib/call-scenarios";
+import {FICHE, FICHE_CRITERION, ficheFor, recipientsFor, orgName, RECIPIENT_CRITERION, REQUIRED, ficheValidated, findScenario, globalResult, scoreFiche, type FicheKey} from "@/lib/call-scenarios";
 import {LiveCall, type Line} from "@/lib/live-call";
 
 type Phase = "brief" | "ringing" | "connecting" | "live" | "ended" | "corrected";
@@ -38,7 +38,7 @@ export default function CallPage() {
   const [deadline, setDeadline] = useState<number | null>(null);
   const [left, setLeft] = useState(TIME_LIMIT);
   const [timedOut, setTimedOut] = useState(false);
-  const timed = !!s?.bank;
+  const timed = !!s?.bank || !!s?.ecf;
   const call = useRef<LiveCall | null>(null);
   const submitRef = useRef<() => void>(() => {});
   const logRef = useRef<HTMLDivElement>(null);
@@ -105,8 +105,9 @@ export default function CallPage() {
 
   const results = useMemo(() => s ? ficheFor(s).map(f => ({...f, ok: scoreFiche(s, f.key, fiche[f.key])})) : [], [s, fiche]);
   if (!s) return <main className="call-page"><section className="call-shell"><h1>MES introuvable</h1><Link href="/exam-prep-2">← Retour</Link></section></main>;
-  const back = s.bank ? "/banque-ecf" : "/exam-prep-2";
-  const section = s.bank ? "BANQUE DE PRÉPARATION ECF" : "EXAM PREP · PART 2";
+  const back = s.ecf === 1 ? "/day4" : s.ecf === 2 ? "/day5" : s.bank ? "/banque-ecf" : "/exam-prep-2";
+  const section = s.ecf ? `ECF · PART ${s.ecf}` : s.bank ? "BANQUE DE PRÉPARATION ECF" : "EXAM PREP · PART 2";
+  const title = s.ecf ? `ECF · Part ${s.ecf}` : `MES ${s.n}`;
   const ficheScore = results.filter(r => r.ok).length;
   const recipientOk = recipient === s.recipient;
   const ficheOk = ficheValidated(Object.fromEntries(results.map(r => [r.key, r.ok])) as Partial<Record<FicheKey, boolean>>, results);
@@ -118,27 +119,28 @@ export default function CallPage() {
   const canEdit = phase !== "brief" && phase !== "corrected";
 
   return <main className="call-page">
-    <header className="call-top"><Link href={back} className="call-back">← {section}</Link><div><small>{section} · ACCUEIL TÉLÉPHONIQUE</small><strong>MES {s.n}</strong></div>{timed && phase !== "brief" && <span className={`call-timer ${deadline === null ? "" : left <= 120 ? "urgent" : left <= 300 ? "warn" : ""}`} role="timer" aria-label="Temps restant">⏱ {phase === "corrected" ? (timedOut ? "TEMPS ÉCOULÉ" : `${clock(TIME_LIMIT - left)} utilisées`) : clock(left)}</span>}<span className="call-date">{s.date} · {s.time}</span></header>
+    <header className="call-top"><Link href={back} className="call-back">← {section}</Link><div><small>{section} · ACCUEIL TÉLÉPHONIQUE</small><strong>{title}</strong></div>{timed && phase !== "brief" && <span className={`call-timer ${deadline === null ? "" : left <= 120 ? "urgent" : left <= 300 ? "warn" : ""}`} role="timer" aria-label="Temps restant">⏱ {phase === "corrected" ? (timedOut ? "TEMPS ÉCOULÉ" : `${clock(TIME_LIMIT - left)} utilisées`) : clock(left)}</span>}<span className="call-date">{s.date} · {s.time}</span></header>
 
     {phase === "brief" ? <section className="call-brief">
-      <span>AVANT L’APPEL</span><h1>MES {s.n}</h1><p>{s.briefing}</p>
-      {timed && <p className="call-timed">⏱ <b>MES chronométrée : 20 minutes</b> à partir du moment où vous décrochez, pour mener l’appel, remplir la fiche, choisir le destinataire et valider. À 0:00, l’appel est coupé et votre fiche est validée automatiquement, telle quelle.</p>}
-      <ul><li>Décrochez et accueillez l’appelant <b>en anglais</b>, comme à l’accueil de Primevère.</li><li>Remplissez la <b>fiche de renseignements</b> pendant l’appel (en français).</li><li>Après l’appel, choisissez le <b>destinataire du message</b> dans l’organigramme.</li><li>Utilisez un <b>casque ou des écouteurs</b> : sinon l’appelant s’entend lui-même.</li></ul>
+      <span>AVANT L’APPEL</span><h1>{title}</h1><p>{s.briefing}</p>
+      {s.org === "pitch" && <p className="call-docs"><a href="/pitch-vision" target="_blank" rel="noopener">📂 Ouvrir les documents Pitch Vision (nouvel onglet) ↗</a></p>}
+      {timed && <p className="call-timed">⏱ <b>{s.ecf ? "Épreuve chronométrée : 20 minutes" : "MES chronométrée : 20 minutes"}</b> à partir du moment où vous décrochez, pour mener l’appel, remplir la fiche, choisir le destinataire et valider. À 0:00, l’appel est coupé et votre fiche est validée automatiquement, telle quelle.</p>}
+      <ul><li>Décrochez et accueillez l’appelant <b>en anglais</b>, comme à l’accueil de {orgName(s)}.</li><li>Remplissez la <b>fiche de renseignements</b> pendant l’appel (en français).</li><li>Après l’appel, choisissez le <b>destinataire du message</b> dans l’organigramme.</li><li>Utilisez un <b>casque ou des écouteurs</b> : sinon l’appelant s’entend lui-même.</li></ul>
       <button type="button" onClick={() => setPhase("ringing")}>JE SUIS PRÊT(E) →</button>
     </section> : <section className="call-grid">
       <div className="call-phone">
         {phase === "ringing" && <div className="call-ring"><div className="ring-icon" aria-hidden="true">☎</div><h2>Appel entrant…</h2><p>Numéro international</p>{error && <p className="call-error" role="alert">{error}</p>}<button type="button" className="answer" onClick={answer}>DÉCROCHER</button></div>}
         {phase !== "ringing" && <>
           <div className={`call-status ${speaking ? "speaking" : ""}`}><div className="avatar" aria-hidden="true">☎</div><div><b>{phase === "connecting" ? "Connexion…" : inCall ? (speaking ? "L’appelant parle…" : "À vous de parler") : "Appel terminé"}</b><span>{clock(seconds)}</span></div>{inCall && <i className="mic" style={{transform: `scaleY(${0.3 + level})`}} aria-hidden="true"/>}</div>
-          <div className="call-log" ref={logRef} aria-live="polite">{lines.length === 0 && <p className="hint">{inCall ? "Décrochez en anglais : « Good afternoon, Primevère… »" : "Aucune réplique enregistrée."}</p>}{lines.map((l, i) => <p key={i} className={l.role}><b>{l.role === "caller" ? "Appelant" : "Vous"}</b>{l.text}</p>)}</div>
+          <div className="call-log" ref={logRef} aria-live="polite">{lines.length === 0 && <p className="hint">{inCall ? `Décrochez en anglais : « Good morning, ${orgName(s)}… »` : "Aucune réplique enregistrée."}</p>}{lines.map((l, i) => <p key={i} className={l.role}><b>{l.role === "caller" ? "Appelant" : "Vous"}</b>{l.text}</p>)}</div>
           {inCall && <button type="button" className="hangup" onClick={hangUp}>RACCROCHER</button>}
         </>}
       </div>
 
       <div className="call-fiche">
-        <div className="fiche-head"><span>FICHE DE RENSEIGNEMENTS</span><small>À remplir en français pendant l’appel</small></div>
+        <div className="fiche-head"><span>FICHE DE RENSEIGNEMENTS</span><small>À remplir en français pendant l’appel{s.org === "pitch" && <> · <a href="/pitch-vision" target="_blank" rel="noopener">documents Pitch Vision ↗</a></>}</small></div>
         <div className="fiche-grid">{results.map(f => <label key={f.key} className={`${f.wide ? "wide" : ""} ${phase === "corrected" ? (f.ok ? "ok" : "ko") : ""}`}><span>{f.label}</span><input value={fiche[f.key]} disabled={!canEdit} onChange={e => setFiche(v => ({...v, [f.key]: e.target.value}))}/>{phase === "corrected" && !f.ok && <em>Attendu : {s.answers[f.key]}</em>}</label>)}</div>
-        <label className={`fiche-recipient ${phase === "corrected" ? (recipientOk ? "ok" : "ko") : ""}`}><span>DESTINATAIRE DU MESSAGE</span><select value={recipient} disabled={!canEdit} onChange={e => setRecipient(e.target.value)}><option value="">— Choisir dans l’organigramme —</option>{RECIPIENTS.map(([n, r]) => <option key={n} value={n}>{n} · {r}</option>)}</select>{phase === "corrected" && <em>{recipientOk ? "✓ " : "Attendu : "}{s.recipientWhy}</em>}</label>
+        <label className={`fiche-recipient ${phase === "corrected" ? (recipientOk ? "ok" : "ko") : ""}`}><span>DESTINATAIRE DU MESSAGE</span><select value={recipient} disabled={!canEdit} onChange={e => setRecipient(e.target.value)}><option value="">— Choisir dans l’organigramme —</option>{recipientsFor(s).map(([n, r]) => <option key={n} value={n}>{n} · {r}</option>)}</select>{phase === "corrected" && <em>{recipientOk ? "✓ " : "Attendu : "}{s.recipientWhy}</em>}</label>
         {phase === "ended" && <button type="button" className="submit" onClick={submit}>VALIDER MA FICHE ET VOIR LA CORRECTION →</button>}
         {inCall && <p className="fiche-note">Vous pourrez finir de compléter la fiche après avoir raccroché{timed ? ", dans la limite des 20 minutes" : ""}.</p>}
       </div>
@@ -153,7 +155,7 @@ export default function CallPage() {
       <ol className="criteria">{grid.map((c, i) => <li key={c.id} className={c.result}><b><i>{i + 1}</i>{c.result === "success" ? "✓" : c.result === "failure" ? "✗" : c.result === "pending" ? "…" : "?"} {c.name}{REQUIRED.includes(c.id) && <em>obligatoire</em>}</b><p>{c.result === "pending" ? "En cours d’analyse…" : c.rationale || "Pas assez d’éléments dans l’appel pour évaluer ce critère."}</p>{(c.result === "failure" || c.result === "unknown") && <Link className="remediation" href={i < 8 ? `/exam-prep-2/guide?etape=${i + 1}` : "/exam-prep-2/grille?section=fiche"}>🔁 {i < 8 ? `Revoir l’étape ${i + 1} du guide (chapitre 02)` : "Revoir la fiche et le destinataire (chapitre 01)"} →</Link>}</li>)}</ol>
       <h2>Des phrases modèles</h2>
       <ol className="model">{s.model.map(m => <li key={m}>{m}</li>)}</ol>
-      <div className="actions"><button type="button" onClick={restart}>↻ REFAIRE L’APPEL</button><Link href={back}>TOUTES LES MES →</Link></div>
+      <div className="actions"><button type="button" onClick={restart}>↻ REFAIRE L’APPEL</button><Link href={back}>{s.ecf ? "RETOUR À L’ECF →" : "TOUTES LES MES →"}</Link></div>
     </section>}
   </main>;
 }

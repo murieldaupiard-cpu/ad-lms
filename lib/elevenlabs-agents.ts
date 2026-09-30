@@ -36,7 +36,7 @@ async function call(path: string, key: string, init: RequestInit = {}) {
 export async function agentFor(s: CallScenario, key: string): Promise<string> {
   const body = config(s);
   const hash = createHash("sha256").update(JSON.stringify(body)).digest("hex").slice(0, 10);
-  const name = `AD LMS · ${s.bank ? "Banque ECF " : ""}MES ${s.n} · ${hash}`;
+  const name = `AD LMS · ${s.ecf ? `ECF ${s.ecf} Pitch Vision ` : s.bank ? "Banque ECF " : ""}MES ${s.n} · ${hash}`;
   const cached = cache.get(name);
   if (cached) return cached;
   const list = await call(`/agents?search=${encodeURIComponent(name)}&page_size=10`, key);

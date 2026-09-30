@@ -53,6 +53,7 @@
 .call-timer.urgent{border-color:var(--ko);color:var(--ko);animation:timer-pulse 1s ease-in-out infinite}
 @keyframes timer-pulse{50%{opacity:.55}}
 @media(prefers-reduced-motion:reduce){.call-timer.urgent{animation:none}}
+.call-docs{margin:12px 0 0}.call-docs a,.fiche-head a{color:var(--gold);font-weight:800}
 .call-timed{margin:14px 0 0;padding:12px 14px;border:1px solid var(--gold);border-radius:12px;background:#f7b93614;color:#f7fbff;line-height:1.5}
 .timeout-note{margin:0 0 18px;padding:12px 14px;border:1px solid var(--ko);border-radius:12px;background:#ff7a8614;line-height:1.5}
 @media(max-width:900px){.call-grid{grid-template-columns:1fr}.call-phone{position:static;min-height:420px}.call-date{display:none}}
