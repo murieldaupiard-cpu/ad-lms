@@ -8,3 +8,6 @@
 .pv-actions a{padding:8px 12px;border-radius:999px;background:#0b1e3d;color:#fff;font-size:11px;font-weight:800;letter-spacing:.08em;text-decoration:none}
 .pv-actions a+a{background:#e3263a}
 @media(max-width:560px){.pv-grid{grid-template-columns:1fr}}
+.pv-all{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+.pv-all a{padding:12px 18px;border-radius:999px;background:#e3263a;color:#fff;font-size:12px;font-weight:800;letter-spacing:.08em;text-decoration:none}
+.pv-all a+a{background:#0b1e3d}

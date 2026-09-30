@@ -3,6 +3,7 @@ import Link from "next/link";
 import {useParams} from "next/navigation";
 import {useEffect, useMemo, useRef, useState} from "react";
 import "./call.css";
+import DocsPanel from "./DocsPanel";
 import {FICHE, FICHE_CRITERION, ficheFor, recipientsFor, orgName, RECIPIENT_CRITERION, REQUIRED, ficheValidated, findScenario, globalResult, scoreFiche, type FicheKey} from "@/lib/call-scenarios";
 import {LiveCall, type Line} from "@/lib/live-call";
 
@@ -38,6 +39,7 @@ export default function CallPage() {
   const [deadline, setDeadline] = useState<number | null>(null);
   const [left, setLeft] = useState(TIME_LIMIT);
   const [timedOut, setTimedOut] = useState(false);
+  const [docsOpen, setDocsOpen] = useState(false);
   const timed = !!s?.bank || !!s?.ecf;
   const call = useRef<LiveCall | null>(null);
   const submitRef = useRef<() => void>(() => {});
@@ -123,7 +125,7 @@ export default function CallPage() {
 
     {phase === "brief" ? <section className="call-brief">
       <span>AVANT L’APPEL</span><h1>{title}</h1><p>{s.briefing}</p>
-      {s.org === "pitch" && <p className="call-docs"><a href="/pitch-vision" target="_blank" rel="noopener">📂 Ouvrir les documents Pitch Vision (nouvel onglet) ↗</a></p>}
+      {s.org === "pitch" && <p className="call-docs">📂 Pendant l’appel, les documents Pitch Vision (annuaire, organigramme, tableau des clients, tarifs, calendrier) s’ouvrent à côté de la fiche. Vous pouvez aussi <a href="/pitch-vision" target="_blank" rel="noopener">les consulter ou les imprimer maintenant ↗</a>.</p>}
       {timed && <p className="call-timed">⏱ <b>{s.ecf ? "Épreuve chronométrée : 20 minutes" : "MES chronométrée : 20 minutes"}</b> à partir du moment où vous décrochez, pour mener l’appel, remplir la fiche, choisir le destinataire et valider. À 0:00, l’appel est coupé et votre fiche est validée automatiquement, telle quelle.</p>}
       <ul><li>Décrochez et accueillez l’appelant <b>en anglais</b>, comme à l’accueil de {orgName(s)}.</li><li>Remplissez la <b>fiche de renseignements</b> pendant l’appel (en français).</li><li>Après l’appel, choisissez le <b>destinataire du message</b> dans l’organigramme.</li><li>Utilisez un <b>casque ou des écouteurs</b> : sinon l’appelant s’entend lui-même.</li></ul>
       <button type="button" onClick={() => setPhase("ringing")}>JE SUIS PRÊT(E) →</button>
@@ -138,7 +140,8 @@ export default function CallPage() {
       </div>
 
       <div className="call-fiche">
-        <div className="fiche-head"><span>FICHE DE RENSEIGNEMENTS</span><small>À remplir en français pendant l’appel{s.org === "pitch" && <> · <a href="/pitch-vision" target="_blank" rel="noopener">documents Pitch Vision ↗</a></>}</small></div>
+        <div className="fiche-head"><span>FICHE DE RENSEIGNEMENTS</span><small>À remplir en français pendant l’appel</small></div>
+        {s.org === "pitch" && phase !== "corrected" && <button type="button" className="docs-open" onClick={() => setDocsOpen(o => !o)}>📂 {docsOpen ? "Masquer" : "Ouvrir"} les documents Pitch Vision (annuaire, organigramme, clients…)</button>}
         <div className="fiche-grid">{results.map(f => <label key={f.key} className={`${f.wide ? "wide" : ""} ${phase === "corrected" ? (f.ok ? "ok" : "ko") : ""}`}><span>{f.label}</span><input value={fiche[f.key]} disabled={!canEdit} onChange={e => setFiche(v => ({...v, [f.key]: e.target.value}))}/>{phase === "corrected" && !f.ok && <em>Attendu : {s.answers[f.key]}</em>}</label>)}</div>
         <label className={`fiche-recipient ${phase === "corrected" ? (recipientOk ? "ok" : "ko") : ""}`}><span>DESTINATAIRE DU MESSAGE</span><select value={recipient} disabled={!canEdit} onChange={e => setRecipient(e.target.value)}><option value="">— Choisir dans l’organigramme —</option>{recipientsFor(s).map(([n, r]) => <option key={n} value={n}>{n} · {r}</option>)}</select>{phase === "corrected" && <em>{recipientOk ? "✓ " : "Attendu : "}{s.recipientWhy}</em>}</label>
         {phase === "ended" && <button type="button" className="submit" onClick={submit}>VALIDER MA FICHE ET VOIR LA CORRECTION →</button>}
@@ -157,5 +160,6 @@ export default function CallPage() {
       <ol className="model">{s.model.map(m => <li key={m}>{m}</li>)}</ol>
       <div className="actions"><button type="button" onClick={restart}>↻ REFAIRE L’APPEL</button><Link href={back}>{s.ecf ? "RETOUR À L’ECF →" : "TOUTES LES MES →"}</Link></div>
     </section>}
+  {s.org === "pitch" && <DocsPanel open={docsOpen && phase !== "corrected"} onClose={() => setDocsOpen(false)}/>}
   </main>;
 }
