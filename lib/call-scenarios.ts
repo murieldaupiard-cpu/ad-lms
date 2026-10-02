@@ -697,7 +697,7 @@ export const REQUIRED = ["accueil", "coordonnees"];
 export const ficheFor = (s: CallScenario) => FICHE.filter(f => !!s.answers[f.key]);
 export function ficheValidated(ok: Partial<Record<FicheKey, boolean>>, fields = FICHE): boolean {
   const wrong = fields.filter(f => !ok[f.key]).length;
-  return wrong <= 1 && ok.lastName && (ok.phone || ok.email);
+  return wrong <= 1 && Boolean(ok.lastName) && Boolean(ok.phone || ok.email);
 }
 export function globalResult(validated: Record<string, boolean>): {count: number; acquis: boolean} {
   const count = Object.values(validated).filter(Boolean).length;
