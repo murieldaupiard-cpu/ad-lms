@@ -125,7 +125,7 @@ export default function Day3() {
           <section className="casino-invite">
             <div><span>DAY 03 · VOCABULARY CHALLENGE</span><h2>Back to the CADGA Casino.</h2><p>Same table, same chips — except today you know every word on it. Bet accordingly.</p></div>
             <div className="casino-invite-chips"><i>€5</i><i>€20</i><i>€50</i></div>
-            <Link href="/casino">ENTER THE CASINO <b>→</b></Link>
+            <Link href="/casino">ENTER THE CASINO GAME <b>→</b></Link>
           </section>
           <section className="timesup-invite">
             <div><span>DAY 03 · TEAM CHALLENGE</span><h2>Time’s Up CADGA.</h2><p>Thirty cards, three rounds. End the day on your feet, not in front of a screen.</p></div>
