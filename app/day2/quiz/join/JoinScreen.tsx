@@ -6,6 +6,7 @@ import "../quiz.css";
 import { AvatarBuilder, DEFAULT_AVATAR, GladiatorAvatar } from "../GladiatorAvatar";
 import PlayerGame from "../PlayerGame";
 import { VOCABULARY_BANK } from "@/lib/quiz-vocabulary";
+import { VOCABULARY_BANK_2 } from "@/lib/quiz-vocabulary-2";
 
 // ---------------------------------------------------------------------------
 // /day2/quiz/join — what a learner lands on after scanning the host's QR
@@ -156,7 +157,7 @@ function JoinForm() {
           )}
 
           {phase === "started" && playerId && (
-            <PlayerGame pin={pin} playerId={playerId} name={name} avatar={avatar} bank={searchParams.get("quiz") === "vocab" ? VOCABULARY_BANK : undefined} limit={searchParams.get("quiz") === "vocab" ? 60 : undefined} />
+            <PlayerGame pin={pin} playerId={playerId} name={name} avatar={avatar} bank={searchParams.get("quiz") === "vocab" ? VOCABULARY_BANK : searchParams.get("quiz") === "vocab2" ? VOCABULARY_BANK_2 : undefined} limit={searchParams.get("quiz")?.startsWith("vocab") ? 60 : undefined} />
           )}
         </div>
       </div>
