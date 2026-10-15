@@ -51,9 +51,9 @@ const modules = [
   {
     number: "06",
     title: "L'Arène 2",
-    description: "New questions only: expressions and real work situations from the three vocabulary sheets.",
+    description: "Harder questions: close wrong answers, gap-fills, real work situations and phrases.",
     href: "/day3/quiz-vocabulary-2",
-    activities: "193 questions · 60 par partie",
+    activities: "96 questions · 60 par partie",
     color: "numbers",
     live: true,
   },

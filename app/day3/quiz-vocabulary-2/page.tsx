@@ -3,7 +3,7 @@
 import QuizArena from "../../day2/quiz/QuizArena";
 import { VOCABULARY_BANK_2 } from "@/lib/quiz-vocabulary-2";
 
-// Day 3 · Module 06 — L'Arène 2 : questions nouvelles (193), 60 tirées au sort par partie.
+// Day 3 · Module 06 — L'Arène 2 : 96 questions difficiles, 60 tirées au sort par partie.
 export default function Day3VocabularyQuiz2Page() {
   return (
     <QuizArena
