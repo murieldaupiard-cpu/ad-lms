@@ -287,7 +287,8 @@ function shuffleQuestionOptions(question: Question): Question {
 
 // Wayground-style shuffle: reorder the questions AND reorder each question's
 // answers, freshly every time a game starts.
-export function buildShuffledQuestions(bank: Question[] = QUESTION_BANK): Question[] {
-  return shuffleArray(bank).map(shuffleQuestionOptions);
+export function buildShuffledQuestions(bank: Question[] = QUESTION_BANK, limit?: number): Question[] {
+  const drawn = shuffleArray(bank);
+  return (limit && limit < drawn.length ? drawn.slice(0, limit) : drawn).map(shuffleQuestionOptions);
 }
 

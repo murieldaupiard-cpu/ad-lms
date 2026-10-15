@@ -14,6 +14,7 @@ export type QuizArenaProps = {
   joinPath?: string;
   eyebrow?: string;
   headline?: string[];
+  questionsPerGame?: number;
 };
 import PlayerGame, { FunMusicButton } from "./PlayerGame";
 
@@ -53,6 +54,7 @@ export default function QuizArena({
   joinPath = "/day2/quiz/join",
   eyebrow = "Day 02 · Module 01",
   headline = ["Nombres, symboles,", "heures et dates."],
+  questionsPerGame,
 }: QuizArenaProps) {
   const router = useRouter();
   const [screen, setScreen] = useState<Screen>("landing");
@@ -91,7 +93,7 @@ export default function QuizArena({
   useEffect(() => clearTimer, []);
 
   async function startGame(chosenMode: Mode) {
-    questionsRef.current = buildShuffledQuestions(bank);
+    questionsRef.current = buildShuffledQuestions(bank, questionsPerGame);
     const me: Player = { id: "me", name, avatar, score: 0, isMe: true };
     setMode(chosenMode);
     setScore(0);

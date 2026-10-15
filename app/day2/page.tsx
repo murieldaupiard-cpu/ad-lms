@@ -123,7 +123,7 @@ export default function Day2() {
 
         <div className="day-games day2-games">
           <section className="casino-invite">
-            <div><span>DAY 02 · VOCABULARY CHALLENGE</span><h2>Enter the Casino Game.</h2><p>47 professional vocabulary hands. €100 in chips. One final All-in.</p></div>
+            <div><span>DAY 02 · VOCABULARY CHALLENGE</span><h2>Enter the Casino Game.</h2><p>Twenty professional vocabulary hands. €100 in chips. One final All-in.</p></div>
             <div className="casino-invite-chips"><i>€5</i><i>€20</i><i>€50</i></div>
             <Link href="/casino">ENTER THE CASINO GAME <b>→</b></Link>
           </section>
