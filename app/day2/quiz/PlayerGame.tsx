@@ -144,9 +144,9 @@ export function FunMusicButton() {
   </button>;
 }
 
-export default function PlayerGame({ pin, playerId, name, avatar }: { pin: string; playerId: string; name: string; avatar: string }) {
+export default function PlayerGame({ pin, playerId, name, avatar, bank, limit }: { pin: string; playerId: string; name: string; avatar: string; bank?: Question[]; limit?: number }) {
   const [session, setSession] = useState<Session | null>(null);
-  const [questions] = useState(() => buildShuffledQuestions());
+  const [questions] = useState(() => buildShuffledQuestions(bank, limit));
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<number[]>([]);
   const [locked, setLocked] = useState(false);

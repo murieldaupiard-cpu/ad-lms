@@ -15,6 +15,7 @@ export type QuizArenaProps = {
   eyebrow?: string;
   headline?: string[];
   questionsPerGame?: number;
+  quizKey?: string;
 };
 import PlayerGame, { FunMusicButton } from "./PlayerGame";
 
@@ -55,6 +56,7 @@ export default function QuizArena({
   eyebrow = "Day 02 · Module 01",
   headline = ["Nombres, symboles,", "heures et dates."],
   questionsPerGame,
+  quizKey,
 }: QuizArenaProps) {
   const router = useRouter();
   const [screen, setScreen] = useState<Screen>("landing");
@@ -316,7 +318,7 @@ export default function QuizArena({
             </div>
           )}
 
-          {screen === "player" && pin && playerId && <PlayerGame pin={pin} playerId={playerId} name={name} avatar={avatar} />}
+          {screen === "player" && pin && playerId && <PlayerGame pin={pin} playerId={playerId} name={name} avatar={avatar} bank={bank} limit={questionsPerGame} />}
 
           {screen === "question" && q && (
             <div className="qz-view qz-question">
@@ -450,11 +452,13 @@ function Lobby({
   hostPlayer,
   onReady,
   joinPath = "/day2/quiz/join",
+  quizKey,
 }: {
   pin: string | null;
   hostPlayer: Player;
   onReady: (players: Player[]) => void;
   joinPath?: string;
+  quizKey?: string;
 }) {
   const [joined, setJoined] = useState<SessionPlayer[]>([]);
   const [status, setStatus] = useState<SessionStatus>("waiting");
@@ -498,7 +502,7 @@ function Lobby({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countingDown, n]);
 
-  const joinUrl = pin && typeof window !== "undefined" ? `${window.location.origin}${joinPath}?pin=${pin}` : "";
+  const joinUrl = pin && typeof window !== "undefined" ? `${window.location.origin}${joinPath}?pin=${pin}${quizKey ? `&quiz=${quizKey}` : ""}` : "";
   const qrSrc = joinUrl ? `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data=${encodeURIComponent(joinUrl)}` : "";
 
   return (

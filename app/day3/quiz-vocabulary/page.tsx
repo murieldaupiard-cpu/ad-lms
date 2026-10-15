@@ -9,6 +9,7 @@ export default function Day3VocabularyQuizPage() {
     <QuizArena
       bank={VOCABULARY_BANK}
       questionsPerGame={60}
+      quizKey="vocab"
       title="L'Arène du Vocabulaire"
       homeHref="/day3"
       joinPath="/day3/join"
