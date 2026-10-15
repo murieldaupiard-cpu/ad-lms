@@ -9,7 +9,7 @@ import type { Question } from "./quiz-questions";
 // (fiche 1 : entreprise, rôles, appels, réunions ; fiche 2 : logistique,
 // suivi, argent, événements ; fiche 3 : connecteurs, déplacements, vente,
 // accueil, courrier, expressions). Chaque partie en tire une sélection
-// au hasard (voir questionsPerGame dans QuizArena).
+// au hasard (60 par partie, voir questionsPerGame dans QuizArena).
 // ---------------------------------------------------------------------------
 
 export const VOCABULARY_BANK: Question[] = [
